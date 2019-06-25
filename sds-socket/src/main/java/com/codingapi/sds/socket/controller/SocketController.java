@@ -3,6 +3,8 @@ package com.codingapi.sds.socket.controller;
 import com.codingapi.sds.socket.service.ServerService;
 import com.codingapi.sds.socket.model.Server;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
+import org.springframework.cloud.client.loadbalancer.LoadBalancerClient;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -16,9 +18,25 @@ public class SocketController {
     @Autowired
     private ServerService serverService;
 
+    @Autowired
+    private DiscoveryClient discoveryClient;
+
+    @Autowired
+    private LoadBalancerClient loadBalancerClient;
+
     @RequestMapping(value = "/index",method = RequestMethod.GET)
     public String index(){
         return "success";
+    }
+
+    @GetMapping(value = "/getServices")
+    public Object getServices() {
+        return discoveryClient.getInstances("delivery");
+    }
+
+    @GetMapping(value = "/chooseService")
+    public Object chooseService() {
+        return loadBalancerClient.choose("delivery").getUri().toString();
     }
 
     @RequestMapping(value = "/getServer",method = RequestMethod.GET)

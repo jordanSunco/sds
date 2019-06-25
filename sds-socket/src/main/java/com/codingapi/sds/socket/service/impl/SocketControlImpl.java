@@ -9,6 +9,8 @@ import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.Attribute;
 import io.netty.util.AttributeKey;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
+import org.springframework.cloud.client.loadbalancer.LoadBalancerClient;
 import org.springframework.cloud.client.serviceregistry.Registration;
 import org.springframework.stereotype.Service;
 

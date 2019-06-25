@@ -34,8 +34,8 @@ public class SocketEventServiceImpl implements SocketEventService {
         if("heartTime".equals(str)) {
             socketControl.resetHeartTime(ctx.channel(),20);
         }
-
-        ctx.writeAndFlush(datas);
+        str+="\r\n";
+        ctx.writeAndFlush(str.getBytes());
     }
 
     @Override
