@@ -1,7 +1,11 @@
 # Socket Delivery Server
 
-框架主要是为了提供一个可以负载大量socket tcp长连接的通讯服务。分为两部分delivery分发负载模块、socketServer通讯模块。
-模块delivery依赖redis共享数据，提供双服务提高高可用性能；socketServer基于eureka负载可提供无上限的拓展支持，提供海量socket长连接请求业务。
+部署步骤：
+1. Spring Cloud Consul服务注册和发现，这里主要参考：
+https://blog.csdn.net/it_lihongmin/article/details/91357445
+2. 在集群Leader服务器上部署delivery-demo；
+3. socket-demo是需要部署到多台服务器上的，修改application.property参数后打包放到要部署的服务器上，启动即可；
 
-
-使用说明见 [wiki](https://github.com/1991wangliang/sds/wiki)
+调用方法：
+1. 设备每次连接的时候，先通过socket请求到delivery-demo，然后delivery的netty服务端会发送可用的一台socket server服务端机器的信息，然后端口socket连接；
+2. 设备拿到socket server的服务器信息后，进行socket连接（长连接）通讯；
