@@ -56,9 +56,9 @@ public class NettyServerServiceImpl implements NettyServerService {
                     .handler(new LoggingHandler(LogLevel.INFO))
                     .childHandler(new SocketServerChannelInitializer(socketConfig.getHeartTime(),socketService,applicationContext));
             // Bind and start to accept incoming connections.
-            b.bind(socketConfig.getPort());
+            b.bind(socketConfig.getNettyPort());
 
-            logger.info("socket: "+socketConfig.getPort()+" starting....");
+            logger.info("socket: "+socketConfig.getNettyPort()+" starting....");
             // Wait until the server socket is closed.
             // In this example, this does not happen, but you can do that to gracefully
         } catch (Exception e) {

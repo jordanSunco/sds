@@ -31,7 +31,7 @@ public class DeliveryServerSendEventServiceImpl implements DeliveryServerSendEve
         Server server =  deliveryServerService.getOkServer();
 
         //发送分配的负载均衡信息给客户端
-        SocketUtils.send(ctx.channel(),server.toString().getBytes());
+        SocketUtils.send(ctx.channel(),(server.toString()+"\r\n").getBytes());
     }
 
     @Override

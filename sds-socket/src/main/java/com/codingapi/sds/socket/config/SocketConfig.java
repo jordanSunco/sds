@@ -10,9 +10,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 @ConfigurationProperties(prefix = "codingapi.sds.socket")
 public class SocketConfig {
 
-
-    private int port;
-
     private int heartTime;
 
     private int maxConnection;
@@ -45,14 +42,6 @@ public class SocketConfig {
 
     public void setNettyTag(String nettyTag) {
         this.nettyTag = nettyTag;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public void setPort(int port) {
-        this.port = port;
     }
 
     public int getHeartTime() {
