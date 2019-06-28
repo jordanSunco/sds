@@ -40,6 +40,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
+                    <finalName>${project.name}</finalName>
                     <mainClass>com.dawnwin.app.stick.StickSocketApplication</mainClass>
                 </configuration>
             </plugin>

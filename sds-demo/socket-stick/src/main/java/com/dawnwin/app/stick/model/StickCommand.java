@@ -42,11 +42,7 @@ public class StickCommand {
     private String power;
     private String signal;
 
-    /**
-     * 判断是否是拐杖传过来的指令
-     * @param cmdStr
-     * @return
-     */
+
     public static boolean isStickCommand(String cmdStr){
         for(String cmd:validCmdList){
             if(cmdStr.contains(cmd)){
