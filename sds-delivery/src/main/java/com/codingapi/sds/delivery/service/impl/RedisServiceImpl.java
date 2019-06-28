@@ -79,4 +79,5 @@ public class RedisServiceImpl implements RedisService {
         ValueOperations<String, String> operations = redisTemplate.opsForValue();
         return operations.get(key_prefix + key);
     }
+
 }
