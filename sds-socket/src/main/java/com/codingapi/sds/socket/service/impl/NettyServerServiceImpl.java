@@ -40,7 +40,6 @@ public class NettyServerServiceImpl implements NettyServerService {
 
 
 
-
     private Logger logger = LoggerFactory.getLogger(NettyServerServiceImpl.class);
 
 

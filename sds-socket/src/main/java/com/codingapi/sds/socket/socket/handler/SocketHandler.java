@@ -69,7 +69,7 @@ public class SocketHandler extends ChannelInboundHandlerAdapter {
         logger.info("disconnection - > "+ctx);
         String uniqueKey = ctx.channel().remoteAddress().toString();
         socketService.getSocketEventService().onDisConnectionListener(ctx,uniqueKey);
-
+        //channel失效，从Map中移除
         SocketManager.getInstance().removeClient(ctx.channel());
 
         try {
