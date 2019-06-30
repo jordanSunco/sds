@@ -6,20 +6,15 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="delivery-demo" />
+        <module name="delivery" />
         <module name="sds-delivery" />
         <module name="sds-socket" />
         <module name="socket-demo (1)" />
         <module name="socket-stick" />
       </profile>
-      <profile name="Annotation profile for sds" enabled="true">
-        <sourceOutputDir name="../socket-stick/target/generated-sources/annotations" />
-        <sourceTestOutputDir name="../socket-stick/target/generated-test-sources/test-annotations" />
-        <outputRelativeToContentRoot value="true" />
-        <module name="socket-demo" />
-      </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="delivery" target="1.8" />
       <module name="delivery-demo" target="1.8" />
       <module name="sds" target="1.8" />
       <module name="sds-delivery" target="1.8" />

@@ -14,9 +14,8 @@
         <module>sds-delivery</module>
         <module>sds-socket</module>
 
-        <module>sds-demo/delivery-demo</module>
-        <module>sds-demo/socket-demo</module>
         <module>sds-demo/socket-stick</module>
+        <module>sds-demo/delivery</module>
     </modules>
 
 

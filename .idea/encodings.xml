@@ -3,10 +3,9 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/sds-delivery" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/sds-demo/delivery" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/sds-demo/delivery-demo" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/sds-demo/sds-socket" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/sds-demo/socket-demo" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/sds-demo/socket-demo2" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/sds-demo/socket-stick" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/sds-socket" charset="UTF-8" />
   </component>

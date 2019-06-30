@@ -2,11 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/sds-demo/delivery-demo/delivery-demo.iml" filepath="$PROJECT_DIR$/sds-demo/delivery-demo/delivery-demo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sds-demo/delivery/delivery.iml" filepath="$PROJECT_DIR$/sds-demo/delivery/delivery.iml" />
       <module fileurl="file://$PROJECT_DIR$/sds.iml" filepath="$PROJECT_DIR$/sds.iml" />
       <module fileurl="file://$PROJECT_DIR$/sds-delivery/sds-delivery.iml" filepath="$PROJECT_DIR$/sds-delivery/sds-delivery.iml" />
       <module fileurl="file://$PROJECT_DIR$/sds-socket/sds-socket.iml" filepath="$PROJECT_DIR$/sds-socket/sds-socket.iml" />
-      <module fileurl="file://$PROJECT_DIR$/sds-demo/socket-demo/socket-demo.iml" filepath="$PROJECT_DIR$/sds-demo/socket-demo/socket-demo.iml" />
       <module fileurl="file://$PROJECT_DIR$/sds-demo/socket-stick/socket-demo (1).iml" filepath="$PROJECT_DIR$/sds-demo/socket-stick/socket-demo (1).iml" />
       <module fileurl="file://$PROJECT_DIR$/sds-demo/socket-stick/socket-stick.iml" filepath="$PROJECT_DIR$/sds-demo/socket-stick/socket-stick.iml" />
     </modules>

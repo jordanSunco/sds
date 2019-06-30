@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Component
 public interface DeliveryClient {
 
-
     @RequestMapping(value = "/online/add",method = RequestMethod.POST)
     boolean add(@RequestParam("modelName") String modelName,@RequestParam("uniqueKey") String uniqueKey);
 
@@ -27,5 +26,8 @@ public interface DeliveryClient {
 
     @RequestMapping(value = "/delivery/sendStrCmdByKey",method = RequestMethod.POST)
     boolean sendStrCmdByKey(@RequestParam(name = "key") String key, @RequestParam(name = "cmd") String cmd);
+
+    @RequestMapping(value = "/stick/rec",method = RequestMethod.POST)
+    boolean receive(@RequestParam(name = "cmd") String cmd, @RequestParam(name = "imei") String imei, @RequestParam(name = "data") String data);
 
 }
