@@ -30,10 +30,10 @@ public class StickFence extends Model<StickFence> {
     private int radius;
 
     @TableField(value = "gps_latitude")
-    private String gpsLatitude;
+    private double gpsLatitude;
 
     @TableField(value = "gps_longitude")
-    private String gpsLongitude;
+    private double gpsLongitude;
 
     @TableField(value = "add_time")
     private Date addTime;
