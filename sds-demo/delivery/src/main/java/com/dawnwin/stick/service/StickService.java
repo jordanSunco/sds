@@ -8,6 +8,12 @@ public interface StickService {
     boolean startLocation(String imei);
 
     /**
+     * 测量血压心率
+     * @param imei
+     */
+    boolean startMeasure(String imei);
+
+    /**
      * 设置紧急号码
      * @param imei
      * @param phoneNumberList

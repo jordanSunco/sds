@@ -31,6 +31,17 @@ public class StickServiceImpl implements StickService {
     }
 
     @Override
+    public boolean startMeasure(String imei) {
+        try {
+            String cmd = String.format("{%s#BLOODPRESSURE}\r\n",imei);
+            return socketService.sendStrCmdByKey(imei, cmd);
+        } catch (ServiceException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
     public boolean setSosList(String imei, String phoneNumberList) {
         try {
             String cmd = String.format("{%s#SOSLIST#%s#%s}\r\n",imei, DateUtil.formatDate(new Date(),"YYYYMMddHHmmss"), phoneNumberList);

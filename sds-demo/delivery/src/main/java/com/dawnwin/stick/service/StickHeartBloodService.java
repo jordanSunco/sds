@@ -5,5 +5,5 @@ import com.dawnwin.stick.model.StickGPS;
 import com.dawnwin.stick.model.StickHeartBlood;
 
 public interface StickHeartBloodService extends IService<StickHeartBlood> {
-
+    StickHeartBlood getLatestHeartBlood(int deviceId);
 }

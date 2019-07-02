@@ -24,7 +24,7 @@ public class JwtFilter implements Filter {
         HttpServletRequest request =(HttpServletRequest)req;
         HttpServletResponse response = (HttpServletResponse)res;
         String token = request.getHeader("Authorization"); //获取请求传来的token
-        if(token.startsWith("Bearer ")) {
+        if(token != null && token.startsWith("Bearer ")) {
             Claims claims = JwtHelper.verifyJwt(token.substring(7)); //验证token
             request.setAttribute("Authorization", claims);
             if (claims == null) {

@@ -255,7 +255,7 @@ public class StickController {
         StickUser user = userService.selectByMobile(mobile);
         if(!StringUtils.isEmpty(imei)){
             StickDevice device = deviceService.findDeviceByImei(imei);
-            if(device != null && device.getUserId() > 0){
+            if(device != null && device.getUserId() != null && device.getUserId() > 0){
                 ret.setCode(1003);
                 ret.setMsg("手杖已被绑定");
             } else if(device == null) {
@@ -265,7 +265,7 @@ public class StickController {
                 device.setUserId(user.getUserId());
                 device.setBindTime(new Date());
                 device.updateById();
-                ret.setCode(1008);
+                ret.setCode(1000);
                 ret.setMsg("手杖绑定成功");
             }
         }
@@ -463,6 +463,27 @@ public class StickController {
         return ret;
     }
 
+    @GetMapping(value = "/api/auth/sendHealthCommand")
+    public R<StickHeartBlood> sendHealth(@RequestParam String imei){
+        R<StickHeartBlood> ret = new R<>();
+        if(!StringUtils.isEmpty(imei)){
+            //先发送定位指令
+            stickService.startLocation(imei);
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            StickDevice device = deviceService.findDeviceByImei(imei);
+            if(device != null){
+                StickHeartBlood heartBlood = heartBloodService.getLatestHeartBlood(device.getDeviceId());
+                ret.setCode(1000);
+                ret.setData(heartBlood);
+            }
+        }
+        return ret;
+    }
+
     @GetMapping(value = "/api/auth/getHealthAll")
     public R<List<StickHeartBlood>> getHealthAll(@RequestParam String imei){
         R<List<StickHeartBlood>> ret = new R<>();
@@ -567,6 +588,7 @@ public class StickController {
         return ret;
     }
 
+    /*
     @RequestMapping(value = "/api")
     public String api(@RequestParam(name = "arg1") String arg1,
                       @RequestParam(name = "arg2") String arg2){
@@ -1344,6 +1366,7 @@ public class StickController {
         }
         return retJson.toJSONString();
     }
+    */
 
     @PostMapping(value = "/rec")
     public boolean receive(@RequestParam(name = "cmd") String cmd,

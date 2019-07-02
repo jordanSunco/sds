@@ -28,6 +28,7 @@
             <artifactId>hutool-all</artifactId>
             <version>4.5.16</version>
         </dependency>
+        <!--json-->
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
