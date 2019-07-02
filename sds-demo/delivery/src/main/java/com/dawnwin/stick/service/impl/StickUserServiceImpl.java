@@ -18,7 +18,7 @@ public class StickUserServiceImpl extends ServiceImpl<StickUserMapper, StickUser
         StickUser cond = new StickUser();
         cond.setMobile(mobile);
         cond.setPassword(pwd);
-        return selectOne(new EntityWrapper<>(cond));
+        return this.selectOne(new EntityWrapper<>(cond));
     }
 
     @Override

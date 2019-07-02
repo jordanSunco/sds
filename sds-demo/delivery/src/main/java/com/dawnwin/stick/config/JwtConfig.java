@@ -6,12 +6,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class JwtCfg {
+public class JwtConfig {
     @Bean
-    public FilterRegistrationBean jwtFilter() {
+    public FilterRegistrationBean createJwtFilter() {
         final FilterRegistrationBean registrationBean = new FilterRegistrationBean();
         registrationBean.setFilter(new JwtFilter());
-        registrationBean.addUrlPatterns("/auth/*");
+        registrationBean.addUrlPatterns("/stick/api/auth/*");
 
         return registrationBean;
     }

@@ -19,21 +19,21 @@ public class StickFence extends Model<StickFence> {
      * 主键ID
      */
     @TableId(value = "id", type = IdType.INPUT)
-    private String fenceId;
+    private Integer fenceId;
 
     @TableField(value = "device_id")
-    private int deviceId;
+    private Integer deviceId;
 
     @TableField(value = "fence_name")
     private String fenceName;
 
-    private int radius;
+    private Integer radius;
 
     @TableField(value = "gps_latitude")
-    private double gpsLatitude;
+    private Double gpsLatitude;
 
     @TableField(value = "gps_longitude")
-    private double gpsLongitude;
+    private Double gpsLongitude;
 
     @TableField(value = "add_time")
     private Date addTime;

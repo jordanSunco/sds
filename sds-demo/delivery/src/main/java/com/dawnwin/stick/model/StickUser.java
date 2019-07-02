@@ -19,13 +19,13 @@ public class StickUser extends Model<StickUser> {
      * 主键ID
      */
     @TableId(value = "id", type = IdType.INPUT)
-    private int userId;
+    private Integer userId;
 
     private String mobile;
 
     private String password;
 
-    private int love;
+    private Integer love;
 
     @TableField(value = "nick_name")
     private String nickName;

@@ -17,6 +17,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.dawnwin.stick.config.SMSTemplateConfig;
 import com.dawnwin.stick.model.*;
 import com.dawnwin.stick.service.*;
+import com.dawnwin.stick.utils.JwtHelper;
 import com.lorne.core.framework.exception.ServiceException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -26,6 +27,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.crypto.SecretKey;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Base64;
 import java.util.Date;
@@ -45,7 +47,7 @@ public class StickController {
     @Autowired
     private StickService stickService;
     @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
+    private RedisTemplate<String, String> redisTemplate;
     @Autowired
     private SMSTemplateConfig smsTemplateConfig;
     @Autowired
@@ -62,15 +64,11 @@ public class StickController {
     private StickFenceService fenceService;
 
     private String getMobile(){
-        String authorization = request.getHeader("Authorization");
-        String token =  authorization.substring(7);
-        String key = Base64.getEncoder().encodeToString("secretkey".getBytes());
-        Claims claims = Jwts.parser().setSigningKey(key).parseClaimsJws(token).getBody();
-        String mobile = claims.getSubject();
+        String mobile = (String) request.getAttribute("mobile");
         return mobile;
     }
 
-    @RequestMapping(value = "/index")
+    @RequestMapping(value = "/api/index")
     public boolean index(){
         return true;
     }
@@ -79,10 +77,10 @@ public class StickController {
     public R<Boolean> reg(@RequestParam(name = "mobile") String mobile,
                           @RequestParam(name = "password") String password,
                           @RequestParam(name = "nickname") String nickname){
-        R<Boolean> ret = new R<>(true);
+        R<Boolean> ret = new R<>(false);
         StickUser user = new StickUser();
         user.setMobile(mobile);
-        StickUser existUser = userService.login(mobile, password);
+        StickUser existUser = userService.selectByMobile(mobile);
         if (existUser != null && existUser.getUserId() > 0) {
             ret.setCode(1002);
             ret.setMsg("注册失败，手机号码已存在");
@@ -98,6 +96,7 @@ public class StickController {
                 ret.setCode(1001);
                 ret.setMsg("注册失败");
             }
+            ret.setData(isOK);
         }
         return ret;
     }
@@ -159,9 +158,9 @@ public class StickController {
     public R<Boolean> resetPass(@RequestParam(name = "mobile") String mobile,
                                 @RequestParam(name = "checkcode") String checkcode,
                                 @RequestParam(name = "newpassword") String newpassword){
-        R<Boolean> ret = new R<>(true);
+        R<Boolean> ret = new R<>(false);
         if(!StringUtils.isEmpty(mobile) && !StringUtils.isEmpty(checkcode) && !StringUtils.isEmpty(newpassword)){
-            String code = (String) redisTemplate.opsForValue().get("code" + mobile);
+            String code = redisTemplate.opsForValue().get("code" + mobile);
             if(!StringUtils.isEmpty(code) && code.equals(checkcode)){
                 StickUser user = userService.selectByMobile(mobile);
                 if(user == null){
@@ -171,6 +170,7 @@ public class StickController {
                     user.setPassword(newpassword);
                     user.updateById();
                     ret.setCode(1000);
+                    ret.setData(true);
                     ret.setMsg("密码重置成功");
                 }
             }else{
@@ -186,13 +186,14 @@ public class StickController {
                                 @RequestParam(name = "password") String password){
         JSONObject retJson = new JSONObject();
         R<JSONObject> ret = new R<>();
-        if(!StringUtils.isEmpty(mobile) && !StringUtils.isEmpty(mobile) && !StringUtils.isEmpty(password)){
-            StickUser condition = new StickUser();
-            condition.setMobile(mobile);
-            condition.setPassword(password);
-            StickUser user = userService.selectOne(new EntityWrapper<>(condition));
+        if(!StringUtils.isEmpty(mobile) && !StringUtils.isEmpty(password)){
+            StickUser user = userService.login(mobile,password);
             if(user != null){
+                String jwtToken = JwtHelper.generateToken(mobile,user.getUserId());
+                retJson.put("token", jwtToken);
                 ret.setCode(1000);
+                ret.setMsg("登录成功");
+
                 StickDevice deviceCondition = new StickDevice();
                 deviceCondition.setUserId(user.getUserId());
                 StickDevice device = deviceService.selectOne(new EntityWrapper<>(deviceCondition));
@@ -200,12 +201,7 @@ public class StickController {
                     retJson.put("bindimei", device.getDeviceImei());
                     retJson.put("phone",device.getBindPhone());
                     retJson.put("love", user.getLove());
-                    ret.setMsg("登录成功");
-
-                    // Create Twt token
-                    String jwtToken = Jwts.builder().setSubject(mobile).claim("roles", "member").setIssuedAt(new Date())
-                            .signWith(SignatureAlgorithm.HS256, "secretkey").compact();
-                    retJson.put("token", jwtToken);
+                    ret.setData(retJson);
                 }
             }else{
                 ret.setCode(1001);
@@ -217,18 +213,18 @@ public class StickController {
     }
 
     @PostMapping(value = "/api/auth/changePass")
-    public R<Boolean> changePass(@RequestParam String oldpass, @RequestParam String newpassword){
+    public R<Boolean> changePass(@RequestParam String oldpass, @RequestParam String newpass){
         String mobile = getMobile();
         R<Boolean> ret = new R<>(false);
         StickUser user = userService.selectByMobile(mobile);
-        if(!StringUtils.isEmpty(oldpass) && !StringUtils.isEmpty(newpassword)){
+        if(!StringUtils.isEmpty(oldpass) && !StringUtils.isEmpty(newpass)){
             StickUser existUser = userService.login(mobile, oldpass);
             if(existUser == null){
                 ret.setCode(1001);
                 ret.setMsg("旧密码错误");
                 return ret;
             }else{
-                existUser.setPassword(newpassword);
+                existUser.setPassword(newpass);
                 existUser.updateById();
                 ret.setCode(1000);
                 ret.setMsg("修改密码成功");

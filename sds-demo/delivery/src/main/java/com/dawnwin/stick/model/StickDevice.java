@@ -19,7 +19,7 @@ public class StickDevice extends Model<StickDevice> {
      * 主键ID
      */
     @TableId(value = "id", type = IdType.INPUT)
-    private int deviceId;
+    private Integer deviceId;
 
     @TableField(value = "device_imei")
     private String deviceImei;
@@ -28,27 +28,27 @@ public class StickDevice extends Model<StickDevice> {
     private String bindPhone;
 
     @TableField(value = "user_id")
-    private int userId;
+    private Integer userId;
 
     @TableField(value = "avaster")
     private String avaster;
 
-    @TableField(value = "nick_name")
+    @TableField(value = "nickname")
     private String nickName;
 
     @TableField(value = "add_time")
     private Date addTime;
 
     @TableField(value = "user_default")
-    private boolean isUserDefault;
+    private Boolean userDefault;
 
-    private int sex;
+    private Integer sex;
 
-    private double weight;
+    private Integer weight;
 
-    private double height;
+    private Integer height;
 
-    private int age;
+    private Integer age;
 
     private String city;
 
@@ -59,7 +59,7 @@ public class StickDevice extends Model<StickDevice> {
     private Date bindTime;
 
     @TableField(value = "switch_on_off")
-    private int switchOnOff;
+    private Integer switchOnOff;
 
     @Override
     protected Serializable pkVal() {

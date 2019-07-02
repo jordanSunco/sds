@@ -19,17 +19,17 @@ public class StickGPS extends Model<StickGPS> {
      * 主键ID
      */
     @TableId(value = "id", type = IdType.INPUT)
-    private String gpsId;
+    private Integer gpsId;
 
     @TableField(value = "device_id")
-    private int deviceId;
+    private Integer deviceId;
 
     @TableField(value = "location_type")
     private String locationType;
 
-    private double latitude;
+    private Double latitude;
 
-    private double longitude;
+    private Double longitude;
 
     private String direction;
 

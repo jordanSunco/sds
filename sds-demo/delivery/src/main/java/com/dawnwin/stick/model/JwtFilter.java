@@ -1,53 +1,47 @@
 package com.dawnwin.stick.model;
 
+import com.dawnwin.stick.utils.JwtHelper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import org.springframework.web.filter.GenericFilterBean;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class JwtFilter extends GenericFilterBean {
+public class JwtFilter implements Filter {
+
+
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+
+    }
 
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
-        // Change the req and res to HttpServletRequest and HttpServletResponse
-        final HttpServletRequest request = (HttpServletRequest) req;
-        final HttpServletResponse response = (HttpServletResponse) res;
-
-        // Get authorization from Http request
-        final String authHeader = request.getHeader("authorization");
-
-        // If the Http request is OPTIONS then just return the status code 200
-        // which is HttpServletResponse.SC_OK in this code
-        if ("OPTIONS".equals(request.getMethod())) {
-            response.setStatus(HttpServletResponse.SC_OK);
-
-            chain.doFilter(req, res);
-        }
-        // Except OPTIONS, other request should be checked by JWT
-        else {
-
-            // Check the authorization, check if the token is started by "Bearer "
-            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-                throw new ServletException("Missing or invalid Authorization header");
-            }
-
-            // Then get the JWT token from authorization
-            final String token = authHeader.substring(7);
-
-            // Use JWT parser to check if the signature is valid with the Key "secretkey"
-            final Claims claims = Jwts.parser().setSigningKey("secretkey").parseClaimsJws(token).getBody();
-
-            // Add the claim to request header
+        HttpServletRequest request =(HttpServletRequest)req;
+        HttpServletResponse response = (HttpServletResponse)res;
+        String token = request.getHeader("Authorization"); //获取请求传来的token
+        if(token.startsWith("Bearer ")) {
+            Claims claims = JwtHelper.verifyJwt(token.substring(7)); //验证token
             request.setAttribute("Authorization", claims);
-
-            chain.doFilter(req, res);
+            if (claims == null) {
+                response.getWriter().write("token is invalid");
+            }else {
+                String mobile = claims.getSubject();
+                request.setAttribute("mobile", mobile);
+                chain.doFilter(request,response);
+            }
+        }else{
+            response.getWriter().write("token is invalid");
         }
+
+    }
+
+    @Override
+    public void destroy() {
+
     }
 }

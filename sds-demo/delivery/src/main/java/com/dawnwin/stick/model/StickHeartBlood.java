@@ -19,16 +19,16 @@ public class StickHeartBlood extends Model<StickHeartBlood> {
      * 主键ID
      */
     @TableId(value = "id", type = IdType.INPUT)
-    private String heartBloodId;
+    private Integer heartBloodId;
 
     @TableField(value = "device_id")
-    private int deviceId;
+    private Integer deviceId;
 
     @TableField(value = "warn_type")
-    private int warnType;
+    private Integer warnType;
 
     @TableField(value = "heart_rate")
-    private int heartRate;
+    private Integer heartRate;
 
     @TableField(value = "blood_pressure")
     private String bloodPressure;

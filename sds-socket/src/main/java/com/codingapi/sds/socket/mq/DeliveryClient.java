@@ -24,7 +24,7 @@ public interface DeliveryClient {
     @RequestMapping(value = "/online/putKey",method = RequestMethod.POST)
     boolean putKey(@RequestParam("modelName") String modelName,@RequestParam("uniqueKey") String uniqueKey,@RequestParam("key") String key);
 
-    @RequestMapping(value = "/delivery/sendStrCmdByKey",method = RequestMethod.POST)
+    @RequestMapping(value = "/delivery/sendStrCmdByKey",method =  RequestMethod.POST)
     boolean sendStrCmdByKey(@RequestParam(name = "key") String key, @RequestParam(name = "cmd") String cmd);
 
     @RequestMapping(value = "/stick/rec",method = RequestMethod.POST)
