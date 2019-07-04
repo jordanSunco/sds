@@ -38,6 +38,15 @@ public class StickSocketEventServiceImpl implements SocketEventService {
         if(!StringUtils.isEmpty(cmdStr)) {
             StickCommand command = StickCommand.getCommand(cmdStr);
             if(command != null){
+                if(StickCommand.DEVICE_LOGIN.equals(command.getCmd())){
+                    if(!stickService.checkDevice(command.getDeviceImei())){
+                        ctx.close();
+                    }
+                }
+                //重置心跳时间规则
+                if(StickCommand.DEVICE_HEARTBEAT.equals(cmdStr)) {
+                    socketControl.resetHeartTime(ctx.channel(),20);
+                }
                 //设备主动发起的指令
                 response = stickService.processStickCommand(modelName,uniqueKey,command);
             }else{
@@ -45,11 +54,6 @@ public class StickSocketEventServiceImpl implements SocketEventService {
             }
         }
 
-
-        //重置心跳时间规则
-        if("heartTime".equals(cmdStr)) {
-            socketControl.resetHeartTime(ctx.channel(),20);
-        }
         response+="\r\n";
         ctx.writeAndFlush(response.getBytes());
     }

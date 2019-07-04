@@ -2,6 +2,7 @@ package com.codingapi.sds.socket.mq;
 
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -26,6 +27,9 @@ public interface DeliveryClient {
 
     @RequestMapping(value = "/delivery/sendStrCmdByKey",method =  RequestMethod.POST)
     boolean sendStrCmdByKey(@RequestParam(name = "key") String key, @RequestParam(name = "cmd") String cmd);
+
+    @GetMapping(value = "/stick/check")
+    boolean check(@RequestParam(name = "imei") String imei);
 
     @RequestMapping(value = "/stick/rec",method = RequestMethod.POST)
     boolean receive(@RequestParam(name = "cmd") String cmd, @RequestParam(name = "imei") String imei, @RequestParam(name = "data") String data);

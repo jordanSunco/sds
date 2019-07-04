@@ -73,6 +73,17 @@ public class StickController {
         return true;
     }
 
+    @GetMapping(value = "/check")
+    public boolean check(@RequestParam String imei){
+        if(!StringUtils.isEmpty(imei)){
+            StickDevice device = deviceService.findDeviceByImei(imei);
+            if(device != null){
+                return true;
+            }
+        }
+        return false;
+    }
+
     @PostMapping(value = "/api/reg")
     public R<Boolean> reg(@RequestParam(name = "mobile") String mobile,
                           @RequestParam(name = "password") String password,
