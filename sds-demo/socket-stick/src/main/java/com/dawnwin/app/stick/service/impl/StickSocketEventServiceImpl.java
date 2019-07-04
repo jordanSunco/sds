@@ -44,8 +44,8 @@ public class StickSocketEventServiceImpl implements SocketEventService {
                     }
                 }
                 //重置心跳时间规则
-                if(StickCommand.DEVICE_HEARTBEAT.equals(cmdStr)) {
-                    socketControl.resetHeartTime(ctx.channel(),20);
+                if(StickCommand.DEVICE_HEARTBEAT.equals(command.getCmd())) {
+                    socketControl.resetHeartTime(ctx.channel(),180);
                 }
                 //设备主动发起的指令
                 response = stickService.processStickCommand(modelName,uniqueKey,command);
@@ -61,30 +61,24 @@ public class StickSocketEventServiceImpl implements SocketEventService {
     @Override
     public void onConnectionListener(ChannelHandlerContext ctx, String uniqueKey) {
         String modelName = socketControl.getModelName();
-
         logger.info("onConnectionListener--> modelName->"+modelName+",uniqueKey->"+uniqueKey);
     }
 
     @Override
     public void onDisConnectionListener(ChannelHandlerContext ctx, String uniqueKey) {
         String modelName = socketControl.getModelName();
-
         logger.info("onDisConnectionListener--> modelName->"+modelName+",uniqueKey->"+uniqueKey);
     }
 
     @Override
     public void onHeartNoWriteDataListener(ChannelHandlerContext ctx, String uniqueKey) {
-
         logger.info("onHeartNoWriteDataListener");
-
         //ctx.close();
     }
 
     @Override
     public void onHeartNoReadDataListener(ChannelHandlerContext ctx, String uniqueKey) {
-
         logger.info("onHeartNoReadDataListener");
-
         //ctx.close();
     }
 

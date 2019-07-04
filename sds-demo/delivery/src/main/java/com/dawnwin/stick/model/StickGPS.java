@@ -46,6 +46,9 @@ public class StickGPS extends Model<StickGPS> {
     @TableField(value = "gps_time")
     private Date gpsTime;
 
+    @TableField(value = "gps_data")
+    private String gpsData;
+
     @Override
     protected Serializable pkVal() {
         return gpsId;

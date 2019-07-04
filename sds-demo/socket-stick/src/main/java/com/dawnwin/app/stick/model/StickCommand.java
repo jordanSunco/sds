@@ -13,8 +13,11 @@ public class StickCommand {
     public static final String DEVICE_HEARTBEAT = "HEARTBEAT";
     public static final String DEVICE_FALLDOWN = "FALLDOWN";
     public static final String DEVICE_BLOODPRESS = "BLOODPRESS";
-    public static final String DEVICE_LBS_WIFI = "LBS/WIFI";
+    public static final String DEVICE_GPS_LBS = "LBS";
+    public static final String DEVICE_GPS_WIFI = "WIFI";
+    public static final String DEVICE_GPS_LBS_WIFI = "WIFI";
     public static final String DEVICE_GPS = "GPS";
+    public static final String DEVICE_BLOOD_PRESS = "BLOODPRESS";
     public static final String SEND_WEBLOCATION = "WEBLOCATION";
     public static final String SEND_SOS_LIST = "SOSLIST";
     public static final String SEND_MONITOR = "MONITOR";
@@ -29,6 +32,14 @@ public class StickCommand {
 
     static {
         validCmdList.add(DEVICE_LOGIN);
+        validCmdList.add(DEVICE_HEARTBEAT);
+        validCmdList.add(DEVICE_FALLDOWN);
+        validCmdList.add(DEVICE_BLOODPRESS);
+        validCmdList.add(DEVICE_GPS_LBS);
+        validCmdList.add(DEVICE_GPS_WIFI);
+        validCmdList.add(DEVICE_GPS_LBS_WIFI);
+        validCmdList.add(DEVICE_GPS);
+        validCmdList.add(DEVICE_BLOOD_PRESS);
     }
 
 
@@ -38,7 +49,8 @@ public class StickCommand {
     private String cmdVersion;
     private String deviceImei;
     private String cmdData;
-    private String timestamp;
+    private String date;
+    private String time;
     private String power;
     private String signal;
 
@@ -72,19 +84,22 @@ public class StickCommand {
             command.setDeviceImei(splitItems[3]);
         }
         if(len>4 &&!StringUtils.isEmpty(splitItems[4])){
-            command.setTimestamp(splitItems[4]);
+            command.setDate(splitItems[4]);
         }
         if(len>5 &&!StringUtils.isEmpty(splitItems[5])){
-            command.setPower(splitItems[5]);
+            command.setTime(splitItems[5]);
         }
         if(len>6 &&!StringUtils.isEmpty(splitItems[6])){
-            command.setSignal(splitItems[6]);
+            command.setPower(splitItems[6]);
         }
         if(len>7 &&!StringUtils.isEmpty(splitItems[7])){
-            command.setCmd(splitItems[7]);
+            command.setSignal(splitItems[7]);
         }
         if(len>8 &&!StringUtils.isEmpty(splitItems[8])){
-            command.setCmdData(splitItems[8]);
+            command.setCmd(splitItems[8]);
+        }
+        if(len>9 &&!StringUtils.isEmpty(splitItems[9])){
+            command.setCmdData(splitItems[9]);
         }
 
         return command;

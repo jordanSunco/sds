@@ -1391,28 +1391,20 @@ public class StickController {
         if(device == null){
             return false;
         }
-        if("GPS".equals(cmd)){
-            JSONObject dataObj = JSONObject.parseObject(data);
-            if (dataObj != null && !dataObj.isEmpty()) {
-                double longtitute = dataObj.getDouble("longtitude");
-                double latitute = dataObj.getDouble("latitute");
-                String direction = dataObj.getString("direction");
-                String speed = dataObj.getString("speed");
-                String satellite = dataObj.getString("satellite");
-                String battery = dataObj.getString("battery");
-                String signal = dataObj.getString("signal");
-                StickGPS gps = new StickGPS();
-                gps.setLongitude(longtitute);
-                gps.setLatitude(latitute);
-                gps.setDeviceId(device.getDeviceId());
-                gps.setDirection(direction);
-                gps.setGpsTime(new Date());
-                gps.setSatellite(satellite);
-                gps.setBattery(battery);
-                gps.setSignal(signal);
-                gps.setSpeed(speed);
-                gps.insert();
+        if("GPS".equals(cmd) || "LBS".equals(cmd) || "WIFI".equals(cmd)){
+            //这些数据怎么转换参考：http://www.cellocation.com/interfac/#cell
+            StickGPS gps = new StickGPS();
+            if("LBS".equals(cmd)){
+                gps.setLocationType("1");
+            }else if("WIFI".equals(cmd)){
+                gps.setLocationType("2");
+            }else if("GPS".equals(cmd)){
+                gps.setLocationType("3");
             }
+            gps.setDeviceId(device.getDeviceId());
+            gps.setGpsTime(new Date());
+            gps.setGpsData(data);
+            gps.insert();
         }else if("FALLDOWN".equals(cmd)){
             StickWarn warn = new StickWarn();
             warn.setDeviceId(device.getDeviceId());

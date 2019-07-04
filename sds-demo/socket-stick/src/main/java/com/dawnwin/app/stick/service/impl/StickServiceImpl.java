@@ -42,14 +42,22 @@ public class StickServiceImpl implements StickService {
             result = String.format("{%s#BLOODPRESS_OK#%s}",command.getDeviceImei(), DateUtil.formatDate(new Date(),"YYYYMMddHHmmss"));
             deliveryClient.receive(cmdType, command.getDeviceImei(), command.getCmdData());
         }
-        if(StickCommand.DEVICE_LBS_WIFI.equals(cmdType)){
-            //TODO 设备上报了GPS，需要记录到数据库
-            result = String.format("{%s#BLOODPRESS_OK}",command.getDeviceImei());
+        if(StickCommand.DEVICE_GPS_LBS_WIFI.equals(cmdType)){
+            deliveryClient.receive(cmdType, command.getDeviceImei(), command.getCmdData());
+            result = String.format("{%s#LBS_WIFI_OK}",command.getDeviceImei());
+        }
+        if(StickCommand.DEVICE_GPS_LBS.equals(cmdType)){
+            deliveryClient.receive(cmdType, command.getDeviceImei(), command.getCmdData());
+            result = String.format("{%s#LBS_OK}",command.getDeviceImei());
+        }
+        if(StickCommand.DEVICE_GPS_WIFI.equals(cmdType)){
+            deliveryClient.receive(cmdType, command.getDeviceImei(), command.getCmdData());
+            result = String.format("{%s#WIFI_OK}",command.getDeviceImei());
         }
         if(StickCommand.DEVICE_GPS.equals(cmdType)){
             result = String.format("{%s#GPS_OK}",command.getDeviceImei());
             //解析GPS数据，发给数据库
-            JSONObject obj = new JSONObject();
+            /*JSONObject obj = new JSONObject();
             String cmdData = command.getCmdData();
             String[] datas = cmdData.split("|");
             if(datas.length >= 2){
@@ -75,8 +83,8 @@ public class StickServiceImpl implements StickService {
                 if(datas.length>5) {
                     obj.put("signal", datas[5]);
                 }
-            }
-            deliveryClient.receive(cmdType, command.getDeviceImei(), obj.toJSONString());
+            }*/
+            deliveryClient.receive(cmdType, command.getDeviceImei(), command.getCmdData());
         }
         return result;
     }
