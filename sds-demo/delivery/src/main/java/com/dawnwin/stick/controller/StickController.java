@@ -1443,6 +1443,9 @@ public class StickController {
         if("SHUTDOWN".equals(cmd)){
             return stickService.shutdownStick(imei);
         }
+        if("BLOODPRESS".equals(cmd)){
+            return stickService.startMeasure(imei);
+        }
         if("RESET".equals(cmd)){
             return stickService.resetStick(imei);
         }
@@ -1458,7 +1461,7 @@ public class StickController {
         if("WIFIINTERVAL".equals(cmd)){
             return stickService.setWifiInterval(imei, Integer.parseInt(data));
         }
-        return true;
+        return false;
     }
 
 }
