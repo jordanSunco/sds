@@ -1443,7 +1443,7 @@ public class StickController {
         if("SHUTDOWN".equals(cmd)){
             return stickService.shutdownStick(imei);
         }
-        if("BLOODPRESS".equals(cmd)){
+        if("BLOODPRESS".equals(cmd) || "WEBHEALTH".equals(cmd)){
             return stickService.startMeasure(imei);
         }
         if("RESET".equals(cmd)){

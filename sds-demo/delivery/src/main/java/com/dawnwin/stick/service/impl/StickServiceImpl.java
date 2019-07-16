@@ -33,7 +33,7 @@ public class StickServiceImpl implements StickService {
     @Override
     public boolean startMeasure(String imei) {
         try {
-            String cmd = String.format("{%s#BLOODPRESS}\r\n",imei);
+            String cmd = String.format("{%s#WEBHEALTH}\r\n",imei);
             return socketService.sendStrCmdByKey(imei, cmd);
         } catch (ServiceException e) {
             e.printStackTrace();
