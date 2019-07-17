@@ -494,11 +494,10 @@ public class StickController {
     }
 
     @PostMapping(value = "/api/auth/sendCommand")
-    public R<Boolean> sendHealth(@RequestParam String imei,@RequestParam String cmd, @RequestParam String data){
+    public R<Boolean> sendCommand(@RequestParam String imei,@RequestParam String cmd, @RequestParam String data){
         R<Boolean> ret = new R<>();
         if(!StringUtils.isEmpty(imei)){
             stickService.startMeasure(imei);
-            StickDevice device = deviceService.findDeviceByImei(imei);
             if(StringUtils.isEmpty(imei) || StringUtils.isEmpty("cmd")){
                 ret.setData(false);
             }
