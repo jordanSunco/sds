@@ -505,6 +505,69 @@ public class StickController {
         return ret;
     }
 
+    @PostMapping(value = "/api/auth/sendCommand")
+    public R<Boolean> sendHealth(@RequestParam String imei,@RequestParam String cmd, @RequestParam String data){
+        R<Boolean> ret = new R<>();
+        if(!StringUtils.isEmpty(imei)){
+            stickService.startMeasure(imei);
+            StickDevice device = deviceService.findDeviceByImei(imei);
+            if(StringUtils.isEmpty(imei) || StringUtils.isEmpty("cmd")){
+                ret.setData(false);
+            }
+            if("SOSLIST".equals(cmd)){
+                stickService.setSosList(imei, data);
+                ret.setCode(1000);
+                ret.setData(true);
+            }
+            if("MONITOR".equals(cmd)){
+                stickService.startMonitor(imei, data);
+                ret.setCode(1000);
+                ret.setData(true);
+            }
+            if("WEBLOCATION".equals(cmd)){
+                stickService.startLocation(imei);
+                ret.setCode(1000);
+                ret.setData(true);
+            }
+            if("SHUTDOWN".equals(cmd)){
+                stickService.shutdownStick(imei);
+                ret.setCode(1000);
+                ret.setData(true);
+            }
+            if("BLOODPRESS".equals(cmd) || "WEBHEALTH".equals(cmd)){
+                stickService.startMeasure(imei);
+                ret.setCode(1000);
+                ret.setData(true);
+            }
+            if("RESET".equals(cmd)){
+                stickService.resetStick(imei);
+                ret.setCode(1000);
+                ret.setData(true);
+            }
+            if("OPENGPS".equals(cmd)){
+                stickService.openGPS(imei);
+                ret.setCode(1000);
+                ret.setData(true);
+            }
+            if("CLOSEGPS".equals(cmd)){
+                stickService.closeGPS(imei);
+                ret.setCode(1000);
+                ret.setData(true);
+            }
+            if("INTERVAL".equals(cmd)){
+                stickService.setInterval(imei, Integer.parseInt(data));
+                ret.setCode(1000);
+                ret.setData(true);
+            }
+            if("WIFIINTERVAL".equals(cmd)){
+                stickService.setWifiInterval(imei, Integer.parseInt(data));
+                ret.setCode(1000);
+                ret.setData(true);
+            }
+        }
+        return ret;
+    }
+
     @GetMapping(value = "/api/auth/getHealthAll")
     public R<List<StickHeartBlood>> getHealthAll(@RequestParam String imei){
         R<List<StickHeartBlood>> ret = new R<>();
