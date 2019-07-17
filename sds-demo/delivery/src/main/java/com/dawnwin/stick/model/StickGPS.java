@@ -43,6 +43,8 @@ public class StickGPS extends Model<StickGPS> {
 
     private String battery;
 
+    private Integer radius;
+
     @TableField(value = "gps_time")
     private Date gpsTime;
 
