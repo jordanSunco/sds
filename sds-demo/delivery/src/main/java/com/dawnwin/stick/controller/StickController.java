@@ -13,7 +13,12 @@ import com.aliyuncs.exceptions.ClientException;
 import com.aliyuncs.exceptions.ServerException;
 import com.aliyuncs.http.MethodType;
 import com.aliyuncs.profile.DefaultProfile;
+import com.baidubce.BceClientConfiguration;
+import com.baidubce.auth.DefaultBceCredentials;
+import com.baidubce.services.dumap.DuMapClient;
+import com.baidubce.services.dumap.model.HardwareLocationRequest;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.dawnwin.stick.config.BaiduConfig;
 import com.dawnwin.stick.config.SMSTemplateConfig;
 import com.dawnwin.stick.model.*;
 import com.dawnwin.stick.service.*;
@@ -26,12 +31,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import javax.crypto.SecretKey;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Base64;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 
@@ -62,6 +66,10 @@ public class StickController {
     private StickHeartBloodService heartBloodService;
     @Autowired
     private StickFenceService fenceService;
+    @Autowired
+    private RestTemplate restTemplate;
+    @Autowired
+    private BaiduConfig baiduConfig;
 
     private String getMobile(){
         String mobile = (String) request.getAttribute("mobile");
@@ -295,6 +303,7 @@ public class StickController {
                 return ret;
             }else {
                 device.setBindPhone(phone);
+                device.updateById();
                 ret.setCode(1000);
                 ret.setMsg("绑定终端号码成功");
                 ret.setData(true);
@@ -328,6 +337,12 @@ public class StickController {
                 }
                 if(deviceInfo.containsKey("city")){
                     device.setCity(deviceInfo.getString("city"));
+                }
+                if(deviceInfo.containsKey("sex")){
+                    device.setSex(deviceInfo.getInteger("sex"));
+                }
+                if(deviceInfo.containsKey("age")){
+                    device.setAge(deviceInfo.getInteger("age"));
                 }
                 device.updateById();
                 ret.setCode(1000);
@@ -479,12 +494,7 @@ public class StickController {
         R<StickHeartBlood> ret = new R<>();
         if(!StringUtils.isEmpty(imei)){
             //先发送定位指令
-            stickService.startLocation(imei);
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            stickService.startMeasure(imei);
             StickDevice device = deviceService.findDeviceByImei(imei);
             if(device != null){
                 StickHeartBlood heartBlood = heartBloodService.getLatestHeartBlood(device.getDeviceId());
@@ -1404,6 +1414,67 @@ public class StickController {
             gps.setDeviceId(device.getDeviceId());
             gps.setGpsTime(new Date());
             gps.setGpsData(data);
+            if(!StringUtils.isEmpty(data)){
+                String[] infos = data.split("&");
+                if(infos.length >= 3){
+                    try {
+                        String gpsinfo = infos[3];
+                        String[] datas = gpsinfo.split("=")[1].split(",");
+                        String mcc = datas[0];
+                        String mnc = datas[1];
+                        String lac = datas[2];
+                        String ci = datas[3];
+                        JSONObject obj = restTemplate.getForObject("http://api.cellocation.com:81/cell/?mcc="+mcc+"&mnc="+mnc+"&lac="+lac+"&ci="+ci+"&output=json", JSONObject.class);
+                        if(obj != null){
+                            gps.setAddress(obj.getString("address"));
+                            gps.setLatitude(Double.valueOf(obj.getString("lat")));
+                            gps.setLongitude(Double.valueOf(obj.getString("lon")));
+                        }
+
+                        /*
+                        String bts = infos[3];
+                        String nearbts = infos[4];
+                        String macs = infos[5];
+
+                        BceClientConfiguration config = new BceClientConfiguration()
+                                .withCredentials(new DefaultBceCredentials(baiduConfig.getAccessKey(), baiduConfig.getSecretKey()));
+
+                        // 初始化一个DuMapClient
+                        DuMapClient client = new DuMapClient(config);
+                        // queryParamList为请求定位的智能硬件列表，每次请求可定位1-3个智能硬件
+                        List<Map<String, Object>> queryParamList = new ArrayList<Map<String, Object>>();
+                        // 每个智能硬件定位的请求信息
+                        Map<String, Object> bodyElem0 = new HashMap<String, Object>();
+                        bodyElem0.put("accesstype", 0);                       // 移动端接入网络方式
+                        bodyElem0.put("output", "JSON");                      // 返回结果类型，目前仅支持JSON（大写）
+                        bodyElem0.put("need_rgc", "Y");                       // 是否返回地址信息，默认不返回
+                        bodyElem0.put("imei",imei);
+                        bodyElem0.put("cdma","0");
+                        bodyElem0.put("network","GSM");
+                        bodyElem0.put("bts",bts.split("=")[1]);
+                        bodyElem0.put("nearbts",nearbts.split("=")[1]);
+                        bodyElem0.put("macs",macs.split("=")[1]);
+                        queryParamList.add(bodyElem0);
+                        HardwareLocationRequest request = HardwareLocationRequest.builder()
+                                .body(queryParamList)                     // 请求定位的智能硬件的详细信息
+                                .src("dawnwin")                                  // 定位请求来源，厂商标识
+                                .prod("stick")                                 // 产品线
+                                .ver("1.0")                               // 请求服务版本号，1.0
+                                .trace(false)                             // 是否开启trace，若为true，则将定位记录到鹰眼(暂不开通)
+                                .build();
+                        String response = client.locate(baiduConfig.getAppid(), request);
+                        JSONObject obj = JSONObject.parseObject(response);
+                        if(obj != null){
+                            //gps.setAddress(obj.getString("address"));
+                            //gps.setLatitude(Double.valueOf(obj.getString("lat")));
+                            //gps.setLongitude(Double.valueOf(obj.getString("lon")));
+                        }*/
+                    }catch (Exception ex){
+                        ex.printStackTrace();
+                    }
+
+                }
+            }
             gps.insert();
         }else if("FALLDOWN".equals(cmd)){
             StickWarn warn = new StickWarn();

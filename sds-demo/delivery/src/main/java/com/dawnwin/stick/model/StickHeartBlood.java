@@ -24,9 +24,6 @@ public class StickHeartBlood extends Model<StickHeartBlood> {
     @TableField(value = "device_id")
     private Integer deviceId;
 
-    @TableField(value = "warn_type")
-    private Integer warnType;
-
     @TableField(value = "heart_rate")
     private Integer heartRate;
 
