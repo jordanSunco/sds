@@ -675,11 +675,11 @@ public class StickController {
             //这些数据怎么转换参考：http://www.cellocation.com/interfac/#cell
             StickGPS gps = new StickGPS();
             if("LBS".equals(cmd)){
-                gps.setLocationType("1");
-            }else if("WIFI".equals(cmd)){
-                gps.setLocationType("2");
-            }else if("GPS".equals(cmd)){
                 gps.setLocationType("3");
+            }else if("WIFI".equals(cmd)){
+                gps.setLocationType("1");
+            }else if("GPS".equals(cmd)){
+                gps.setLocationType("2");
             }
             gps.setDeviceId(device.getDeviceId());
             gps.setGpsTime(new Date());
