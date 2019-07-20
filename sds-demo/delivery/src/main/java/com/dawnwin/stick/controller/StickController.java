@@ -699,6 +699,54 @@ public class StickController {
                     fence.setValid(fenceInfo.getBoolean("isValid"));
                 }
                 fence.insertOrUpdate();
+                //高德地图围栏操作
+                try {
+                    JSONObject amapFence = null;
+                    JSONObject obj = restTemplate.getForObject("https://restapi.amap.com/v4/geofence/meta?key=178d7cef1209656b6d17dda618778330&id=" + fence.getFenceId() + "&name=" + fence.getFenceName(), JSONObject.class);
+                    if (obj != null && obj.containsKey("rs_list")) {
+                        amapFence = obj.getJSONArray("rs_list").getJSONObject(0);
+                        amapFence.put("center", fence.getGpsLongitude() + "," + fence.getGpsLatitude());
+                        amapFence.put("radius", fence.getRadius());
+                        amapFence.put("enable", fence.getValid());
+                        String alert = "";
+                        if (fence.getInAlert()) {
+                            alert += "enter;";
+                        }
+                        if (fence.getOutAlert()) {
+                            alert += "leave;";
+                        }
+                        if (alert.length() > 0) {
+                            alert = alert.substring(0, alert.length() - 1);
+                        }
+                        amapFence.put("alert_condition", alert);
+                        restTemplate.patchForObject("https://restapi.amap.com/v4/geofence/meta?key=178d7cef1209656b6d17dda618778330&gid=" + amapFence.getString("gid"), amapFence, JSONObject.class);
+                    } else {
+                        amapFence = new JSONObject();
+                        amapFence.put("name", fence.getFenceName());
+                        amapFence.put("center", fence.getGpsLongitude() + "," + fence.getGpsLatitude());
+                        amapFence.put("radius", fence.getRadius());
+                        amapFence.put("enable", fence.getValid());
+                        String alert = "";
+                        if (fence.getInAlert()) {
+                            alert += "enter;";
+                        }
+                        if (fence.getOutAlert()) {
+                            alert += "leave;";
+                        }
+                        if (alert.length() > 0) {
+                            alert = alert.substring(0, alert.length() - 1);
+                        }
+                        amapFence.put("alert_condition", alert);
+                        JSONObject rtnObj = restTemplate.postForObject("https://restapi.amap.com/v4/geofence/meta?key=178d7cef1209656b6d17dda618778330", amapFence, JSONObject.class);
+                        if(rtnObj != null && rtnObj.containsKey("data")){
+                            String gid = rtnObj.getJSONObject("data").getString("gid");
+                            fence.setAmapGid(gid);
+                            fence.updateById();
+                        }
+                    }
+                }catch (Exception ex){
+                    ex.printStackTrace();
+                }
                 ret.setCode(1000);
                 ret.setMsg("围栏保存成功");
                 ret.setData(true);
@@ -742,6 +790,43 @@ public class StickController {
                     gps.setLatitude(Double.valueOf(locationObj.getString("location").split(",")[1]));
                     gps.setLongitude(Double.valueOf(locationObj.getString("location").split(",")[0]));
                     gps.setRadius(Integer.valueOf(locationObj.getString("radius")));
+                    try {
+                        String locations = gps.getLongitude() + "," + gps.getLatitude() + "," + System.currentTimeMillis();
+                        obj = restTemplate.getForObject("https://restapi.amap.com/v4/geofence/status?key=178d7cef1209656b6d17dda618778330&diu=" + imei + "&uid=" + device.getDeviceId() + "&locations=" + locations, JSONObject.class);
+                        if (obj != null && obj.containsKey("fencing_event_list")) {
+                            JSONArray alertObj = obj.getJSONArray("fencing_event_list");
+                            for (Object alt : alertObj) {
+                                JSONObject altFence = (JSONObject) alt;
+                                String action = altFence.getString("client_action");
+                                String inout = altFence.getString("client_status");
+                                String gid = altFence.getJSONObject("fence_info").getString("fence_gid");
+                                String fenceName = altFence.getJSONObject("fence_info").getString("fence_name");
+                                StickFence cond = new StickFence();
+                                cond.setAmapGid(gid);
+                                StickFence fc = fenceService.selectOne(new EntityWrapper<>(cond));
+                                if (fc != null) {
+                                    if (action.equals("enter") && fc.getInAlert()) {
+                                        StickWarn warn = new StickWarn();
+                                        warn.setWarnTime(new Date());
+                                        warn.setWarnType(2);
+                                        warn.setDeviceId(device.getDeviceId());
+                                        warn.setContent(device.getNickName() + "进入[" + fenceName + "]电子围栏!");
+                                        warn.insert();
+                                    }
+                                    if (action.equals("leave") && fc.getOutAlert()) {
+                                        StickWarn warn = new StickWarn();
+                                        warn.setWarnTime(new Date());
+                                        warn.setWarnType(2);
+                                        warn.setDeviceId(device.getDeviceId());
+                                        warn.setContent(device.getNickName() + "离开[" + fenceName + "]电子围栏!");
+                                        warn.insert();
+                                    }
+                                }
+                            }
+                        }
+                    }catch (Exception ex){
+                        ex.printStackTrace();
+                    }
                 }
             }
             gps.insert();

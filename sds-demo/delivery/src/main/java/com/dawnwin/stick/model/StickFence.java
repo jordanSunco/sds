@@ -47,6 +47,9 @@ public class StickFence extends Model<StickFence> {
     @TableField(value = "valid")
     private Boolean valid;
 
+    @TableField(value = "amap_gid")
+    private String amapGid;
+
     @Override
     protected Serializable pkVal() {
         return fenceId;
