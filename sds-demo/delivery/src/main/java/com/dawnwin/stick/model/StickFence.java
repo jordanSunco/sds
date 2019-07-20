@@ -38,6 +38,15 @@ public class StickFence extends Model<StickFence> {
     @TableField(value = "add_time")
     private Date addTime;
 
+    @TableField(value = "out_alert")
+    private Boolean isOutAlert;
+
+    @TableField(value = "in_alert")
+    private Boolean isInAlert;
+
+    @TableField(value = "valid")
+    private Boolean isValid;
+
     @Override
     protected Serializable pkVal() {
         return fenceId;
