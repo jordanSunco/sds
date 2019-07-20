@@ -690,13 +690,13 @@ public class StickController {
                     fence.setGpsLongitude(fenceInfo.getDouble("longtitute"));
                 }
                 if(fenceInfo.containsKey("isOutAlert")){
-                    fence.setIsOutAlert(fenceInfo.getBoolean("isOutAlert"));
+                    fence.setOutAlert(fenceInfo.getBoolean("isOutAlert"));
                 }
                 if(fenceInfo.containsKey("isInAlert")){
-                    fence.setIsInAlert(fenceInfo.getBoolean("isInAlert"));
+                    fence.setInAlert(fenceInfo.getBoolean("isInAlert"));
                 }
                 if(fenceInfo.containsKey("isValid")){
-                    fence.setIsValid(fenceInfo.getBoolean("isValid"));
+                    fence.setValid(fenceInfo.getBoolean("isValid"));
                 }
                 fence.insertOrUpdate();
                 ret.setCode(1000);
