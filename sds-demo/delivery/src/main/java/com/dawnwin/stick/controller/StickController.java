@@ -658,6 +658,21 @@ public class StickController {
         return ret;
     }
 
+    @PostMapping(value = "/api/auth/deleteFences")
+    public R<List<StickFence>> deleteFences(@RequestParam String fenceId){
+        R<List<StickFence>> ret = new R<>();
+        if(!StringUtils.isEmpty(fenceId)) {
+            StickFence cond = new StickFence();
+            cond.setFenceId(Integer.parseInt(fenceId));
+            if(fenceService.delete(new EntityWrapper<>(cond))) {
+                ret.setCode(1000);
+            }else {
+                ret.setCode(1001);
+            }
+        }
+        return ret;
+    }
+
     @PostMapping(value = "/api/auth/saveFence")
     public R<Boolean> saveFence(@RequestBody JSONObject fenceInfo){
         R<Boolean> ret = new R<>(false);
