@@ -39,13 +39,13 @@ public class StickFence extends Model<StickFence> {
     private Date addTime;
 
     @TableField(value = "out_alert")
-    private Boolean isOutAlert;
+    private Boolean outAlert;
 
     @TableField(value = "in_alert")
-    private Boolean isInAlert;
+    private Boolean inAlert;
 
     @TableField(value = "valid")
-    private Boolean isValid;
+    private Boolean valid;
 
     @Override
     protected Serializable pkVal() {
