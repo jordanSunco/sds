@@ -32,6 +32,9 @@ public interface DeliveryClient {
     boolean check(@RequestParam(name = "imei") String imei);
 
     @RequestMapping(value = "/stick/rec",method = RequestMethod.POST)
-    boolean receive(@RequestParam(name = "cmd") String cmd, @RequestParam(name = "imei") String imei, @RequestParam(name = "data") String data);
+    boolean receive(@RequestParam(name = "cmd") String cmd,
+                    @RequestParam(name = "imei") String imei,
+                    @RequestParam(name = "power") String power,
+                    @RequestParam(name = "data") String data);
 
 }

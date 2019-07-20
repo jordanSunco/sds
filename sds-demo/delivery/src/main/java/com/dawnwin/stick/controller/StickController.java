@@ -701,6 +701,7 @@ public class StickController {
     @PostMapping(value = "/rec")
     public boolean receive(@RequestParam(name = "cmd") String cmd,
                            @RequestParam(name = "imei") String imei,
+                           @RequestParam(name = "power") String power,
                            @RequestParam(name = "data") String data){
         if(StringUtils.isEmpty(imei) || StringUtils.isEmpty("cmd") || StringUtils.isEmpty(data)){
             return false;
@@ -723,6 +724,7 @@ public class StickController {
             gps.setDeviceId(device.getDeviceId());
             gps.setGpsTime(new Date());
             gps.setGpsData(data);
+            gps.setBattery(power);
             if(!StringUtils.isEmpty(data)){
                 JSONObject obj = restTemplate.getForObject("http://apilocate.amap.com/position?key=a19360c1294349ca021f32893658de66&accesstype=0"+data+"&output=json", JSONObject.class);
                 if(obj != null && obj.containsKey("result")){

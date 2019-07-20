@@ -36,22 +36,22 @@ public class StickServiceImpl implements StickService {
             result = String.format("{%s#HEARTBEAT_OK}",command.getDeviceImei());
         }
         if(StickCommand.DEVICE_FALLDOWN.equals(cmdType)){
-            deliveryClient.receive(cmdType, command.getDeviceImei(),command.getCmdData());
+            deliveryClient.receive(cmdType, command.getDeviceImei(),command.getPower(),command.getCmdData());
         }
         if(StickCommand.DEVICE_BLOODPRESS.equals(cmdType)){
             result = String.format("{%s#BLOODPRESS_OK#%s}",command.getDeviceImei(), DateUtil.formatDate(new Date(),"YYYYMMddHHmmss"));
-            deliveryClient.receive(cmdType, command.getDeviceImei(), command.getCmdData());
+            deliveryClient.receive(cmdType, command.getDeviceImei(),command.getPower(), command.getCmdData());
         }
         if(StickCommand.DEVICE_GPS_LBS_WIFI.equals(cmdType)){
-            deliveryClient.receive(cmdType, command.getDeviceImei(), command.getCmdData());
+            deliveryClient.receive(cmdType, command.getDeviceImei(),command.getPower(), command.getCmdData());
             result = String.format("{%s#LBS_WIFI_OK}",command.getDeviceImei());
         }
         if(StickCommand.DEVICE_GPS_LBS.equals(cmdType)){
-            deliveryClient.receive(cmdType, command.getDeviceImei(), command.getCmdData());
+            deliveryClient.receive(cmdType, command.getDeviceImei(),command.getPower(), command.getCmdData());
             result = String.format("{%s#LBS_OK}",command.getDeviceImei());
         }
         if(StickCommand.DEVICE_GPS_WIFI.equals(cmdType)){
-            deliveryClient.receive(cmdType, command.getDeviceImei(), command.getCmdData());
+            deliveryClient.receive(cmdType, command.getDeviceImei(),command.getPower(), command.getCmdData());
             result = String.format("{%s#WIFI_OK}",command.getDeviceImei());
         }
         if(StickCommand.DEVICE_GPS.equals(cmdType)){
@@ -84,7 +84,7 @@ public class StickServiceImpl implements StickService {
                     obj.put("signal", datas[5]);
                 }
             }*/
-            deliveryClient.receive(cmdType, command.getDeviceImei(), command.getCmdData());
+            deliveryClient.receive(cmdType, command.getDeviceImei(),command.getPower(), command.getCmdData());
         }
         return result;
     }
