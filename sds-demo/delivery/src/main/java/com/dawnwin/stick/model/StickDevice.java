@@ -42,7 +42,7 @@ public class StickDevice extends Model<StickDevice> {
     @TableField(value = "user_default")
     private Boolean userDefault;
 
-    private Integer sex;
+    private String sex;
 
     private Integer weight;
 

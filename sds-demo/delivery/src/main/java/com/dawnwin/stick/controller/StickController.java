@@ -203,6 +203,8 @@ public class StickController {
 
                 StickDevice deviceCondition = new StickDevice();
                 deviceCondition.setUserId(user.getUserId());
+                //登录返回默认手杖
+                deviceCondition.setUserDefault(true);
                 StickDevice device = deviceService.selectOne(new EntityWrapper<>(deviceCondition));
                 if(device!=null){
                     retJson.put("bindimei", device.getDeviceImei());
@@ -269,6 +271,13 @@ public class StickController {
                 ret.setCode(1004);
                 ret.setMsg("手杖不存在");
             } else if(device != null) {
+                //查询当前用户是否绑定了手杖，如果没有则把第一根手杖设为默认
+                List<StickDevice> userDevices = deviceService.listDeviceByUserId(user.getUserId());
+                if(userDevices != null && userDevices.size() == 0) {
+                    device.setUserDefault(true);
+                }else {
+                    device.setUserDefault(false);
+                }
                 device.setUserId(user.getUserId());
                 device.setBindTime(new Date());
                 device.updateById();
@@ -327,7 +336,7 @@ public class StickController {
                     device.setCity(deviceInfo.getString("city"));
                 }
                 if(deviceInfo.containsKey("sex")){
-                    device.setSex(deviceInfo.getInteger("sex"));
+                    device.setSex(deviceInfo.getString("sex"));
                 }
                 if(deviceInfo.containsKey("age")){
                     device.setAge(deviceInfo.getInteger("age"));
@@ -396,6 +405,9 @@ public class StickController {
                 JSONArray array= JSONArray.parseArray(JSON.toJSONString(devices));
                 ret.setData(array);
                 ret.setCode(1000);
+            }else {
+                ret.setCode(1001);
+                ret.setMsg("设备列表为空");
             }
         }
         return ret;
@@ -433,24 +445,51 @@ public class StickController {
         if(!StringUtils.isEmpty(mobile)){
             StickDevice dev = deviceService.findDeviceByImei(imei);
             if(dev!=null){
-                dev.setUserId(0);
-                dev.setBindTime(null);
-                dev.setUserDefault(false);
-                dev.setSosList(null);
-                dev.setNickName(null);
-                dev.setWeight(0);
-                dev.setAvaster(null);
-                dev.setBindPhone(null);
-                dev.setCity(null);
-                dev.setAge(0);
-                dev.setSex(0);
-                dev.updateById();
+                //如果是默认设备，则把该账号下其他设备设置为默认设备
+                if(dev.getUserDefault()) {
+                    dev.setUserId(0);
+                    dev.setBindTime(null);
+                    dev.setUserDefault(false);
+                    dev.setSosList(null);
+                    dev.setNickName(null);
+                    dev.setWeight(0);
+                    dev.setAvaster(null);
+                    dev.setBindPhone(null);
+                    dev.setCity(null);
+                    dev.setAge(0);
+                    dev.setSex(null);
+                    dev.updateById();
+
+                    StickDevice deviceCondition = new StickDevice();
+                    deviceCondition.setUserId(user.getUserId());
+                    StickDevice device = deviceService.selectOne(new EntityWrapper<>(deviceCondition));
+                    if(device != null) {
+                        device.setUserDefault(true);
+                        device.updateById();
+                    }
+                }else {
+                    dev.setUserId(0);
+                    dev.setBindTime(null);
+                    dev.setUserDefault(false);
+                    dev.setSosList(null);
+                    dev.setNickName(null);
+                    dev.setWeight(0);
+                    dev.setAvaster(null);
+                    dev.setBindPhone(null);
+                    dev.setCity(null);
+                    dev.setAge(0);
+                    dev.setSex(null);
+                    dev.updateById();
+                }
             }
             List<StickDevice> devices = deviceService.listDeviceByUserId(user.getUserId());
             if(devices!=null && devices.size()>0){
                 JSONArray array= JSONArray.parseArray(JSON.toJSONString(devices));
                 ret.setData(array);
                 ret.setCode(1000);
+            }else {
+                ret.setCode(1001);
+                ret.setMsg("设备列表为空");
             }
         }
         return ret;
