@@ -18,6 +18,7 @@ import com.dawnwin.stick.model.*;
 import com.dawnwin.stick.service.*;
 import com.dawnwin.stick.utils.JwtHelper;
 import com.lorne.core.framework.exception.ServiceException;
+import io.netty.util.internal.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpEntity;
@@ -211,6 +212,7 @@ public class StickController {
                     retJson.put("bindimei", device.getDeviceImei());
                     retJson.put("phone",device.getBindPhone());
                     retJson.put("love", user.getLove());
+                    retJson.put("nickname", StringUtils.isEmpty(device.getNickName())? "":device.getNickName());
                     ret.setData(retJson);
                 }
             }else{
@@ -387,6 +389,15 @@ public class StickController {
                 JSONArray array = deviceInfo.getJSONArray("soslist");
                 device.setSosList(array.toJSONString());
                 device.updateById();
+                String phoneListStr = "";
+                for(Object obj:array){
+                    phoneListStr += ((JSONObject)obj).getString("name").split(",")[1];
+                    phoneListStr += "|";
+                }
+                if(phoneListStr.length()>0) {
+                    phoneListStr = phoneListStr.substring(0, phoneListStr.length() - 1);
+                }
+                stickService.setSosList(imei, phoneListStr);
                 ret.setCode(1000);
                 ret.setData(true);
                 ret.setMsg("设置SOSList成功");
