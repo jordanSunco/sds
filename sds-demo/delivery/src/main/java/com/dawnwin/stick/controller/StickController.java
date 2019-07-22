@@ -610,6 +610,7 @@ public class StickController {
         return ret;
     }
 
+    //修改查询语句了
     @GetMapping(value = "/api/auth/getGPSByDate")
     public R<List<StickGPS>> getGPSByDate(@RequestParam String imei, @RequestParam String date){
         R<List<StickGPS>> ret = new R<>();
