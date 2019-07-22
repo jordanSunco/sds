@@ -20,7 +20,7 @@ public class StickWarn extends Model<StickWarn> {
     /**
      * 主键ID
      */
-    @TableId(value = "id", type = IdType.INPUT)
+    @TableId(value = "id", type = IdType.AUTO)
     private Integer warnId;
 
     @TableField(value = "device_id")
