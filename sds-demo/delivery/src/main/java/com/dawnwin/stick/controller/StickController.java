@@ -537,14 +537,26 @@ public class StickController {
     public R<Boolean> sendCommand(@RequestParam String imei,@RequestParam String cmd, @RequestParam String data){
         R<Boolean> ret = new R<>();
         if(!StringUtils.isEmpty(imei)){
-            stickService.startMeasure(imei);
             if(StringUtils.isEmpty(imei) || StringUtils.isEmpty("cmd")){
                 ret.setData(false);
             }
             if("SOSLIST".equals(cmd)){
-                stickService.setSosList(imei, data);
-                ret.setCode(1000);
-                ret.setData(true);
+                if(!StringUtils.isEmpty(data)){
+                    JSONArray arr = JSONArray.parseArray(data);
+                    if(arr != null && arr.size() >0) {
+                        String phoneListStr = "";
+                        for(Object obj:arr){
+                            phoneListStr += ((JSONObject)obj).getString("name").split(",")[1];
+                            phoneListStr += "|";
+                        }
+                        if(phoneListStr.length()>0) {
+                            phoneListStr = phoneListStr.substring(0, phoneListStr.length() - 1);
+                        }
+                        stickService.setSosList(imei, phoneListStr);
+                        ret.setCode(1000);
+                        ret.setData(true);
+                    }
+                }
             }
             if("MONITOR".equals(cmd)){
                 stickService.startMonitor(imei, data);
