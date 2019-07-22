@@ -391,8 +391,11 @@ public class StickController {
                 device.updateById();
                 String phoneListStr = "";
                 for(Object obj:array){
-                    phoneListStr += ((JSONObject)obj).getString("name").split(",")[1];
-                    phoneListStr += "|";
+                    String[] p = ((JSONObject)obj).getString("name").split(",");
+                    if(p.length>1) {
+                        phoneListStr += ((JSONObject) obj).getString("name").split(",")[1];
+                        phoneListStr += "|";
+                    }
                 }
                 if(phoneListStr.length()>0) {
                     phoneListStr = phoneListStr.substring(0, phoneListStr.length() - 1);
@@ -883,7 +886,7 @@ public class StickController {
             warn.setDeviceId(device.getDeviceId());
             warn.setWarnTime(new Date());
             warn.setWarnType(1);
-            warn.setContent(data);
+            warn.setContent("跌倒了，请注意！");
             warn.insert();
         }else if("BLOODPRESS".equals(cmd)){
             StickHeartBlood stickHeartBlood = new StickHeartBlood();
