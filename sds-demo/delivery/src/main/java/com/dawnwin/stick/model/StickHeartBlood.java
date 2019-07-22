@@ -20,7 +20,7 @@ public class StickHeartBlood extends Model<StickHeartBlood> {
     /**
      * 主键ID
      */
-    @TableId(value = "id", type = IdType.INPUT)
+    @TableId(value = "id", type = IdType.AUTO)
     private Integer heartBloodId;
 
     @TableField(value = "device_id")

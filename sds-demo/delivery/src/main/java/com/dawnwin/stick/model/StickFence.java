@@ -18,7 +18,7 @@ public class StickFence extends Model<StickFence> {
     /**
      * 主键ID
      */
-    @TableId(value = "id", type = IdType.INPUT)
+    @TableId(value = "id", type = IdType.AUTO)
     private Integer fenceId;
 
     @TableField(value = "device_id")

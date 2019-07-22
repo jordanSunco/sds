@@ -18,7 +18,7 @@ public class StickGPS extends Model<StickGPS> {
     /**
      * 主键ID
      */
-    @TableId(value = "id", type = IdType.INPUT)
+    @TableId(value = "id", type = IdType.AUTO)
     private Integer gpsId;
 
     @TableField(value = "device_id")

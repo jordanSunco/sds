@@ -44,7 +44,7 @@ public class StickServiceImpl implements StickService {
     @Override
     public boolean setSosList(String imei, String phoneNumberList) {
         try {
-            String cmd = String.format("{%s#SOSLIST#%s#%s}\r\n",imei, DateUtil.formatDate(new Date(),"YYYYMMddHHmmss"), phoneNumberList);
+            String cmd = String.format("{%s#SOSLIST#%s#%s}\r\n",imei, DateUtil.formatDate(new Date(),"yyyyMMddHHmmss"), phoneNumberList);
             return socketService.sendStrCmdByKey(imei, cmd);
         } catch (ServiceException e) {
             e.printStackTrace();
@@ -55,7 +55,7 @@ public class StickServiceImpl implements StickService {
     @Override
     public boolean startMonitor(String imei, String mobile) {
         try {
-            String cmd = String.format("{%s#MONITOR#%s#%s}\r\n",imei, DateUtil.formatDate(new Date(),"YYYYMMddHHmmss"),mobile);
+            String cmd = String.format("{%s#MONITOR#%s#%s}\r\n",imei, DateUtil.formatDate(new Date(),"yyyyMMddHHmmss"),mobile);
             return socketService.sendStrCmdByKey(imei, cmd);
         } catch (ServiceException e) {
             e.printStackTrace();
@@ -66,7 +66,7 @@ public class StickServiceImpl implements StickService {
     @Override
     public boolean shutdownStick(String imei) {
         try {
-            String cmd = String.format("{%s#SHUTDOWN#%s}\r\n",imei, DateUtil.formatDate(new Date(),"YYYYMMddHHmmss"));
+            String cmd = String.format("{%s#SHUTDOWN#%s}\r\n",imei, DateUtil.formatDate(new Date(),"yyyyMMddHHmmss"));
             return socketService.sendStrCmdByKey(imei, cmd);
         } catch (ServiceException e) {
             e.printStackTrace();
@@ -77,7 +77,7 @@ public class StickServiceImpl implements StickService {
     @Override
     public boolean resetStick(String imei) {
         try {
-            String cmd = String.format("{%s#RESET#%s}\r\n",imei, DateUtil.formatDate(new Date(),"YYYYMMddHHmmss"));
+            String cmd = String.format("{%s#RESET#%s}\r\n",imei, DateUtil.formatDate(new Date(),"yyyyMMddHHmmss"));
             return socketService.sendStrCmdByKey(imei, cmd);
         } catch (ServiceException e) {
             e.printStackTrace();
@@ -88,7 +88,7 @@ public class StickServiceImpl implements StickService {
     @Override
     public boolean openGPS(String imei) {
         try {
-            String cmd = String.format("{%s#OPENGPS#%s}\r\n",imei, DateUtil.formatDate(new Date(),"YYYYMMddHHmmss"));
+            String cmd = String.format("{%s#OPENGPS#%s}\r\n",imei, DateUtil.formatDate(new Date(),"yyyyMMddHHmmss"));
             return socketService.sendStrCmdByKey(imei, cmd);
         } catch (ServiceException e) {
             e.printStackTrace();
@@ -99,7 +99,7 @@ public class StickServiceImpl implements StickService {
     @Override
     public boolean closeGPS(String imei) {
         try {
-            String cmd = String.format("{%s#CLOSEGPS#%s}\r\n",imei, DateUtil.formatDate(new Date(),"YYYYMMddHHmmss"));
+            String cmd = String.format("{%s#CLOSEGPS#%s}\r\n",imei, DateUtil.formatDate(new Date(),"yyyyMMddHHmmss"));
             return socketService.sendStrCmdByKey(imei, cmd);
         } catch (ServiceException e) {
             e.printStackTrace();
@@ -110,7 +110,7 @@ public class StickServiceImpl implements StickService {
     @Override
     public boolean setInterval(String imei, int interval) {
         try {
-            String cmd = String.format("{%s#INTERVAL#%s#%d}\r\n",imei, DateUtil.formatDate(new Date(),"YYYYMMddHHmmss"),interval);
+            String cmd = String.format("{%s#INTERVAL#%s#%d}\r\n",imei, DateUtil.formatDate(new Date(),"yyyyMMddHHmmss"),interval);
             return socketService.sendStrCmdByKey(imei, cmd);
         } catch (ServiceException e) {
             e.printStackTrace();
@@ -121,7 +121,7 @@ public class StickServiceImpl implements StickService {
     @Override
     public boolean setWifiInterval(String imei, int interval) {
         try {
-            String cmd = String.format("{%s#WIFIINTERVAL#%s#%d}\r\n",imei, DateUtil.formatDate(new Date(),"YYYYMMddHHmmss"),interval);
+            String cmd = String.format("{%s#WIFIINTERVAL#%s#%d}\r\n",imei, DateUtil.formatDate(new Date(),"yyyyMMddHHmmss"),interval);
             return socketService.sendStrCmdByKey(imei, cmd);
         } catch (ServiceException e) {
             e.printStackTrace();

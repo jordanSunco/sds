@@ -20,6 +20,7 @@ import com.dawnwin.stick.utils.JwtHelper;
 import com.lorne.core.framework.exception.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
@@ -664,7 +665,10 @@ public class StickController {
         if(!StringUtils.isEmpty(fenceId)) {
             StickFence cond = new StickFence();
             cond.setFenceId(Integer.parseInt(fenceId));
-            if(fenceService.delete(new EntityWrapper<>(cond))) {
+            StickFence fence = fenceService.selectOne(new EntityWrapper<>(cond));
+            if(fence != null) {
+                fence.deleteById();
+                restTemplate.delete("https://restapi.amap.com/v4/geofence/meta?key=178d7cef1209656b6d17dda618778330&gid=" + fence.getAmapGid());
                 ret.setCode(1000);
             }else {
                 ret.setCode(1001);
@@ -717,12 +721,13 @@ public class StickController {
                 //高德地图围栏操作
                 try {
                     JSONObject amapFence = null;
-                    JSONObject obj = restTemplate.getForObject("https://restapi.amap.com/v4/geofence/meta?key=178d7cef1209656b6d17dda618778330&id=" + fence.getFenceId() + "&name=" + fence.getFenceName(), JSONObject.class);
-                    if (obj != null && obj.containsKey("rs_list")) {
-                        amapFence = obj.getJSONArray("rs_list").getJSONObject(0);
+                    JSONObject obj = restTemplate.getForObject("https://restapi.amap.com/v4/geofence/meta?key=178d7cef1209656b6d17dda618778330&name=" + fence.getFenceName(), JSONObject.class);
+                    if (obj != null && obj.getJSONObject("data").containsKey("rs_list") && obj.getJSONObject("data").getJSONArray("rs_list").size()>0) {
+                        amapFence = obj.getJSONObject("data").getJSONArray("rs_list").getJSONObject(0);
                         amapFence.put("center", fence.getGpsLongitude() + "," + fence.getGpsLatitude());
-                        amapFence.put("radius", fence.getRadius());
-                        amapFence.put("enable", fence.getValid());
+                        amapFence.put("radius", fence.getRadius()+"");
+                        amapFence.put("enable", fence.getValid()+"");
+                        amapFence.put("repeat","Mon,Tues,Wed,Thur,Fri,Sat,Sun");
                         String alert = "";
                         if (fence.getInAlert()) {
                             alert += "enter;";
@@ -734,13 +739,15 @@ public class StickController {
                             alert = alert.substring(0, alert.length() - 1);
                         }
                         amapFence.put("alert_condition", alert);
+                        HttpEntity<JSONObject> entity = new HttpEntity<>(amapFence);
                         restTemplate.patchForObject("https://restapi.amap.com/v4/geofence/meta?key=178d7cef1209656b6d17dda618778330&gid=" + amapFence.getString("gid"), amapFence, JSONObject.class);
                     } else {
                         amapFence = new JSONObject();
                         amapFence.put("name", fence.getFenceName());
                         amapFence.put("center", fence.getGpsLongitude() + "," + fence.getGpsLatitude());
-                        amapFence.put("radius", fence.getRadius());
-                        amapFence.put("enable", fence.getValid());
+                        amapFence.put("radius", fence.getRadius()+"");
+                        amapFence.put("enable", fence.getValid()+"");
+                        amapFence.put("repeat","Mon,Tues,Wed,Thur,Fri,Sat,Sun");
                         String alert = "";
                         if (fence.getInAlert()) {
                             alert += "enter;";
@@ -752,11 +759,14 @@ public class StickController {
                             alert = alert.substring(0, alert.length() - 1);
                         }
                         amapFence.put("alert_condition", alert);
-                        JSONObject rtnObj = restTemplate.postForObject("https://restapi.amap.com/v4/geofence/meta?key=178d7cef1209656b6d17dda618778330", amapFence, JSONObject.class);
+                        HttpEntity<JSONObject> entity = new HttpEntity<>(amapFence);
+                        JSONObject rtnObj = restTemplate.postForObject("https://restapi.amap.com/v4/geofence/meta?key=178d7cef1209656b6d17dda618778330", entity, JSONObject.class);
                         if(rtnObj != null && rtnObj.containsKey("data")){
                             String gid = rtnObj.getJSONObject("data").getString("gid");
-                            fence.setAmapGid(gid);
-                            fence.updateById();
+                            if(!StringUtils.isEmpty(gid)) {
+                                fence.setAmapGid(gid);
+                                fence.updateById();
+                            }
                         }
                     }
                 }catch (Exception ex){
@@ -784,7 +794,6 @@ public class StickController {
             return false;
         }
         if("GPS".equals(cmd) || "LBS".equals(cmd) || "WIFI".equals(cmd)){
-            //这些数据怎么转换参考：http://www.cellocation.com/interfac/#cell
             StickGPS gps = new StickGPS();
             if("LBS".equals(cmd)){
                 gps.setLocationType("3");

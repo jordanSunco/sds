@@ -18,7 +18,7 @@ public class StickDevice extends Model<StickDevice> {
     /**
      * 主键ID
      */
-    @TableId(value = "id", type = IdType.INPUT)
+    @TableId(value = "id", type = IdType.AUTO)
     private Integer deviceId;
 
     @TableField(value = "device_imei")

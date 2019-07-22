@@ -18,7 +18,7 @@ public class StickUser extends Model<StickUser> {
     /**
      * 主键ID
      */
-    @TableId(value = "id", type = IdType.INPUT)
+    @TableId(value = "id", type = IdType.AUTO)
     private Integer userId;
 
     private String mobile;
