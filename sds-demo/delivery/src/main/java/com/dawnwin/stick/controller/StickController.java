@@ -618,7 +618,7 @@ public class StickController {
             if(device != null){
                 StickGPS cond = new StickGPS();
                 cond.setDeviceId(device.getDeviceId());
-                List<StickGPS> gps = gpsService.selectList(new EntityWrapper<StickGPS>().where(" device_id = ? and left(gps_time,7) = ? ", device.getDeviceId(), date));
+                List<StickGPS> gps = gpsService.selectList(new EntityWrapper<StickGPS>().where(" device_id = {0} and left(gps_time,10) = {1} ", device.getDeviceId(), date));
                 ret.setCode(1000);
                 ret.setData(gps);
             }

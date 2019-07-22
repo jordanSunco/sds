@@ -6,7 +6,9 @@ import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -45,6 +47,8 @@ public class StickGPS extends Model<StickGPS> {
 
     private Integer radius;
 
+    @DateTimeFormat(pattern= "yyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern= "yyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @TableField(value = "gps_time")
     private Date gpsTime;
 
