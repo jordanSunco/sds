@@ -65,4 +65,19 @@ public class StickDevice extends Model<StickDevice> {
     protected Serializable pkVal() {
         return deviceId;
     }
+
+    public void reset(){
+        setUserDefault(false);
+        setSosList(null);
+        setAvaster(null);
+        setNickName(null);
+        setBindTime(null);
+        setBindPhone(null);
+        setCity(null);
+        setAge(0);
+        setHeight(0);
+        setSex(null);
+        setUserId(null);
+        setWeight(0);
+    }
 }

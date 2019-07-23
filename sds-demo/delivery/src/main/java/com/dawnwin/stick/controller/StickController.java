@@ -59,6 +59,8 @@ public class StickController {
     @Autowired
     private StickFenceService fenceService;
     @Autowired
+    private StickUserDeviceService userDeviceService;
+    @Autowired
     private RestTemplate restTemplate;
 
     private String getMobile(){
@@ -267,16 +269,23 @@ public class StickController {
         StickUser user = userService.selectByMobile(mobile);
         if(!StringUtils.isEmpty(imei)){
             StickDevice device = deviceService.findDeviceByImei(imei);
-            if(device != null && device.getUserId() != null && device.getUserId() > 0){
-                ret.setCode(1003);
-                ret.setMsg("手杖已被绑定");
+            if(device != null && device.getUserId() != null && device.getUserId() != user.getUserId()){
+                //这跟拐杖被别人绑定了
+                StickUserDevice userDevice = new StickUserDevice();
+                userDevice.setAddTime(new Date());
+                userDevice.setUserId(user.getUserId());
+                userDevice.setDeviceId(device.getDeviceId());
+                userDevice.setBindType(1);
+                userDevice.insert();
+                ret.setCode(1000);
+                ret.setMsg("手杖关爱成功");
             } else if(device == null) {
                 ret.setCode(1004);
                 ret.setMsg("手杖不存在");
             } else if(device != null) {
                 //查询当前用户是否绑定了手杖，如果没有则把第一根手杖设为默认
                 List<StickDevice> userDevices = deviceService.listDeviceByUserId(user.getUserId());
-                if(userDevices != null && userDevices.size() == 0) {
+                if(userDevices == null || userDevices.size() == 0) {
                     device.setUserDefault(true);
                 }else {
                     device.setUserDefault(false);
@@ -593,6 +602,15 @@ public class StickController {
                 ret.setData(true);
             }
             if("RESET".equals(cmd)){
+                //清除绑定
+                StickDevice device = deviceService.findDeviceByImei(imei);
+                device.reset();
+                device.updateById();
+                //清除关爱
+                StickUserDevice cond = new StickUserDevice();
+                cond.setDeviceId(device.getDeviceId());
+                userDeviceService.delete(new EntityWrapper<>(cond));
+                //通知手杖重置
                 stickService.resetStick(imei);
                 ret.setCode(1000);
                 ret.setData(true);

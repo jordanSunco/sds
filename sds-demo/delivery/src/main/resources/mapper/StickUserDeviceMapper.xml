@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dawnwin.stick.mapper.StickUserDeviceMapper">
+    <select id="listLoveDeviceByUserId" parameterType="int" resultType="com.dawnwin.stick.model.StickDevice">
+        select id AS deviceId,device_imei AS deviceImei,bind_phone AS bindPhone,user_id AS userId,avaster,nickname AS nickName,add_time AS addTime,user_default AS userDefault,sex,weight,height,age,city,sos_list AS sosList,bind_time AS bindTime,switch_on_off AS switchOnOff from stk_device a where a.id in(
+          select device_id from stk_user_device b where b.user_id = #{userId}
+        )
+    </select>
+</mapper>
