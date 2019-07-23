@@ -36,6 +36,7 @@ public class StickServiceImpl implements StickService {
             result = String.format("{%s#HEARTBEAT_OK}",command.getDeviceImei());
         }
         if(StickCommand.DEVICE_FALLDOWN.equals(cmdType)){
+            result = String.format("{%s#FALLDOWN_OK}",command.getDeviceImei());
             deliveryClient.receive(cmdType, command.getDeviceImei(),command.getPower(),command.getCmdData());
         }
         if(StickCommand.DEVICE_BLOODPRESS.equals(cmdType)){
