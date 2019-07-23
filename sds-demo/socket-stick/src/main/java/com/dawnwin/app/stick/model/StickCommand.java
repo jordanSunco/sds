@@ -65,11 +65,13 @@ public class StickCommand {
     }
 
     public static StickCommand getCommand(String cmdStr){
-        if(StringUtils.isEmpty(cmdStr)||!cmdStr.startsWith("{")&&!cmdStr.endsWith("}") || !isStickCommand(cmdStr)){
+        if(StringUtils.isEmpty(cmdStr)
+                ||(!cmdStr.startsWith("{") && !cmdStr.endsWith("}"))
+                || !isStickCommand(cmdStr)){
             return null;
         }
         StickCommand command = new StickCommand();
-        String[] splitItems = cmdStr.replace("{","").replace("}","").split("\\*");
+        String[] splitItems = cmdStr.replace("{","").replace("}","").replace("\r\n","").split("\\*");
         int len = splitItems.length;
         if(len>0 && !StringUtils.isEmpty(splitItems[0])){
             command.setProductName(splitItems[0]);
