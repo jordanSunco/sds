@@ -812,7 +812,7 @@ public class StickController {
                            @RequestParam(name = "imei") String imei,
                            @RequestParam(name = "power") String power,
                            @RequestParam(name = "data") String data){
-        if(StringUtils.isEmpty(imei) || StringUtils.isEmpty(cmd)){
+        if(StringUtils.isEmpty(imei) || StringUtils.isEmpty(cmd) || StringUtils.isEmpty(data)){
             return false;
         }
 
