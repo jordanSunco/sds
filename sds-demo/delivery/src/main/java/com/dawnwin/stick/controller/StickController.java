@@ -397,9 +397,9 @@ public class StickController {
                         phoneListStr += "|";
                     }
                 }
-                if(phoneListStr.length()>0) {
+                /*if(phoneListStr.length()>0) {
                     phoneListStr = phoneListStr.substring(0, phoneListStr.length() - 1);
-                }
+                }*/
                 stickService.setSosList(imei, phoneListStr);
                 ret.setCode(1000);
                 ret.setData(true);
