@@ -7,5 +7,6 @@ import com.dawnwin.stick.model.StickUserDevice;
 import java.util.List;
 
 public interface StickUserDeviceService extends IService<StickUserDevice> {
-    List<StickDevice> listLoveDeviceByUserId(int userId);
+    List<StickDevice> listDevicesByUserId(int userId);
+    void deleteByUserAndDevice(int userId, int deviceId);
 }

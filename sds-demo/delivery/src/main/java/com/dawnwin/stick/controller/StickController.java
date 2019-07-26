@@ -18,7 +18,6 @@ import com.dawnwin.stick.model.*;
 import com.dawnwin.stick.service.*;
 import com.dawnwin.stick.utils.JwtHelper;
 import com.lorne.core.framework.exception.ServiceException;
-import io.netty.util.internal.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpEntity;
@@ -204,17 +203,23 @@ public class StickController {
                 retJson.put("token", jwtToken);
                 ret.setCode(1000);
                 ret.setMsg("登录成功");
-
-                StickDevice deviceCondition = new StickDevice();
-                deviceCondition.setUserId(user.getUserId());
-                //登录返回默认手杖
-                deviceCondition.setUserDefault(true);
-                StickDevice device = deviceService.selectOne(new EntityWrapper<>(deviceCondition));
-                if(device!=null){
-                    retJson.put("bindimei", device.getDeviceImei());
-                    retJson.put("phone",device.getBindPhone());
-                    retJson.put("love", user.getLove());
-                    retJson.put("nickname", StringUtils.isEmpty(device.getNickName())? "":device.getNickName());
+                StickUserDevice cond = new StickUserDevice();
+                cond.setUserId(user.getUserId());
+                StickDevice defaultDevice = null;
+                List<StickDevice> userDevices = userDeviceService.listDevicesByUserId(user.getUserId());
+                if(userDevices!=null && userDevices.size()>0){
+                    defaultDevice = userDevices.get(0);
+                    for(StickDevice dev:userDevices){
+                        if(dev.getIsDefault()){
+                            defaultDevice = dev;
+                            break;
+                        }
+                    }
+                }
+                if(defaultDevice!=null){
+                    retJson.put("bindimei", defaultDevice.getDeviceImei());
+                    retJson.put("phone", defaultDevice.getBindPhone());
+                    retJson.put("nickname", StringUtils.isEmpty(defaultDevice.getNickName())? "":defaultDevice.getNickName());
                     ret.setData(retJson);
                 }
             }else{
@@ -269,32 +274,48 @@ public class StickController {
         StickUser user = userService.selectByMobile(mobile);
         if(!StringUtils.isEmpty(imei)){
             StickDevice device = deviceService.findDeviceByImei(imei);
-            if(device != null && device.getUserId() != null && device.getUserId() != user.getUserId()){
-                //这跟拐杖被别人绑定了
-                StickUserDevice userDevice = new StickUserDevice();
-                userDevice.setAddTime(new Date());
-                userDevice.setUserId(user.getUserId());
-                userDevice.setDeviceId(device.getDeviceId());
-                userDevice.setBindType(1);
-                userDevice.insert();
-                ret.setCode(1000);
-                ret.setMsg("手杖关爱成功");
-            } else if(device == null) {
+            if(device != null) {
+                StickUserDevice cond = new StickUserDevice();
+                cond.setDeviceId(device.getDeviceId());
+                List<StickUserDevice> userDevices = userDeviceService.selectList(new EntityWrapper<>(cond));
+                boolean isRef = false;
+                boolean isDefault = true;
+                boolean isSelfBinded = false;
+                if (userDevices != null && userDevices.size()>0) {
+                    isDefault = false;
+                    for(StickUserDevice userDevice: userDevices) {
+                        if(userDevice.getDeviceId() == device.getDeviceId()){
+                            isSelfBinded = true;
+                            break;
+                        }
+                    }
+                    if(!isSelfBinded) {
+                        for (StickUserDevice userDevice : userDevices) {
+                            if (userDevice.getBindType() == 0) {
+                                //已经被别人的作为管理设备添加了,那就只能做关爱添加
+                                isRef = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if(isSelfBinded){
+                    ret.setCode(1001);
+                    ret.setMsg("你已绑定此设备");
+                }else {
+                    StickUserDevice newRela = new StickUserDevice();
+                    newRela.setDeviceId(device.getDeviceId());
+                    newRela.setUserId(user.getUserId());
+                    newRela.setBindType(isRef ? 1 : 0);
+                    newRela.setAddTime(new Date());
+                    newRela.setUserDefault(isDefault);
+                    newRela.insert();
+                    ret.setCode(1000);
+                    ret.setMsg("手杖绑定成功");
+                }
+            }else{
                 ret.setCode(1004);
                 ret.setMsg("手杖不存在");
-            } else if(device != null) {
-                //查询当前用户是否绑定了手杖，如果没有则把第一根手杖设为默认
-                List<StickDevice> userDevices = deviceService.listDeviceByUserId(user.getUserId());
-                if(userDevices == null || userDevices.size() == 0) {
-                    device.setUserDefault(true);
-                }else {
-                    device.setUserDefault(false);
-                }
-                device.setUserId(user.getUserId());
-                device.setBindTime(new Date());
-                device.updateById();
-                ret.setCode(1000);
-                ret.setMsg("手杖绑定成功");
             }
         }
         ret.setData(retJson);
@@ -312,7 +333,7 @@ public class StickController {
                 return ret;
             }else {
                 device.setBindPhone(phone);
-                device.updateById();
+                deviceService.updateById(device);
                 ret.setCode(1000);
                 ret.setMsg("绑定终端号码成功");
                 ret.setData(true);
@@ -353,7 +374,7 @@ public class StickController {
                 if(deviceInfo.containsKey("age")){
                     device.setAge(deviceInfo.getInteger("age"));
                 }
-                device.updateById();
+                deviceService.updateById(device);
                 ret.setCode(1000);
                 ret.setMsg("设备信息保存成功");
                 ret.setData(true);
@@ -397,7 +418,7 @@ public class StickController {
             }else {
                 JSONArray array = deviceInfo.getJSONArray("soslist");
                 device.setSosList(array.toJSONString());
-                device.updateById();
+                deviceService.updateById(device);
                 String phoneListStr = "";
                 for(Object obj:array){
                     String[] p = ((JSONObject)obj).getString("name").split(",");
@@ -419,15 +440,14 @@ public class StickController {
     }
 
     @GetMapping(value = "/api/auth/userDevices")
-    public R<JSONArray> userDevices(){
-        R<JSONArray> ret = new R<>();
+    public R<List<StickDevice>> userDevices(){
+        R<List<StickDevice>> ret = new R<>();
         String mobile = getMobile();
         StickUser user = userService.selectByMobile(mobile);
         if(!StringUtils.isEmpty(mobile)){
             List<StickDevice> devices = deviceService.listDeviceByUserId(user.getUserId());
-            if(devices!=null && devices.size()>0){
-                JSONArray array= JSONArray.parseArray(JSON.toJSONString(devices));
-                ret.setData(array);
+            if(devices !=null && devices.size()>0){
+                ret.setData(devices);
                 ret.setCode(1000);
             }else {
                 ret.setCode(1001);
@@ -438,23 +458,34 @@ public class StickController {
     }
 
     @PostMapping(value = "/api/auth/setDefault")
-    public R<JSONArray> setDefault(@RequestParam String imei){
-        R<JSONArray> ret = new R<>();
+    public R<List<StickDevice>> setDefault(@RequestParam String imei){
+        R<List<StickDevice>> ret = new R<>();
         String mobile = getMobile();
         StickUser user = userService.selectByMobile(mobile);
         if(!StringUtils.isEmpty(mobile)){
             List<StickDevice> devices = deviceService.listDeviceByUserId(user.getUserId());
             if(devices!=null && devices.size()>0){
                 for(StickDevice device:devices){
+                    StickUserDevice rela = new StickUserDevice();
+                    rela.setUserId(user.getUserId());
+                    rela.setDeviceId(device.getDeviceId());
+                    StickUserDevice existRela = userDeviceService.selectOne(new EntityWrapper<>(rela));
                     if(imei.equals(device.getDeviceImei())){
-                        device.setUserDefault(true);
+                        device.setIsDefault(true);
+                        if(existRela != null){
+                            existRela.setUserDefault(true);
+                        }
                     }else{
-                        device.setUserDefault(false);
+                        device.setIsDefault(false);
+                        if(existRela != null) {
+                            existRela.setUserDefault(false);
+                        }
                     }
-                    device.updateById();
+                    if(existRela != null) {
+                        existRela.updateById();
+                    }
                 }
-                JSONArray array= JSONArray.parseArray(JSON.toJSONString(devices));
-                ret.setData(array);
+                ret.setData(devices);
                 ret.setCode(1000);
             }
         }
@@ -462,54 +493,18 @@ public class StickController {
     }
 
     @PostMapping(value = "/api/auth/removeDevice")
-    public R<JSONArray> removeDevice(@RequestParam String imei){
-        R<JSONArray> ret = new R<>();
+    public R<List<StickDevice>> removeDevice(@RequestParam String imei){
+        R<List<StickDevice>> ret = new R<>();
         String mobile = getMobile();
         StickUser user = userService.selectByMobile(mobile);
         if(!StringUtils.isEmpty(mobile)){
             StickDevice dev = deviceService.findDeviceByImei(imei);
             if(dev!=null){
-                //如果是默认设备，则把该账号下其他设备设置为默认设备
-                if(dev.getUserDefault()) {
-                    dev.setUserId(0);
-                    dev.setBindTime(null);
-                    dev.setUserDefault(false);
-                    dev.setSosList(null);
-                    dev.setNickName(null);
-                    dev.setWeight(0);
-                    dev.setAvaster(null);
-                    dev.setBindPhone(null);
-                    dev.setCity(null);
-                    dev.setAge(0);
-                    dev.setSex(null);
-                    dev.updateById();
-
-                    StickDevice deviceCondition = new StickDevice();
-                    deviceCondition.setUserId(user.getUserId());
-                    StickDevice device = deviceService.selectOne(new EntityWrapper<>(deviceCondition));
-                    if(device != null) {
-                        device.setUserDefault(true);
-                        device.updateById();
-                    }
-                }else {
-                    dev.setUserId(0);
-                    dev.setBindTime(null);
-                    dev.setUserDefault(false);
-                    dev.setSosList(null);
-                    dev.setNickName(null);
-                    dev.setWeight(0);
-                    dev.setAvaster(null);
-                    dev.setBindPhone(null);
-                    dev.setCity(null);
-                    dev.setAge(0);
-                    dev.setSex(null);
-                    dev.updateById();
-                }
+                deviceService.removeUserDevice(user.getUserId(), dev.getDeviceId());
             }
             List<StickDevice> devices = deviceService.listDeviceByUserId(user.getUserId());
-            if(devices!=null && devices.size()>0){
-                JSONArray array= JSONArray.parseArray(JSON.toJSONString(devices));
-                ret.setData(array);
+            if(devices !=null && devices.size()>0){
+                ret.setData(devices);
                 ret.setCode(1000);
             }else {
                 ret.setCode(1001);
@@ -563,6 +558,8 @@ public class StickController {
             if(StringUtils.isEmpty(imei) || StringUtils.isEmpty("cmd")){
                 ret.setData(false);
             }
+            String mobile = getMobile();
+            StickUser user = userService.selectByMobile(mobile);
             if("SOSLIST".equals(cmd)){
                 if(!StringUtils.isEmpty(data)){
                     JSONArray arr = JSONArray.parseArray(data);
@@ -604,12 +601,7 @@ public class StickController {
             if("RESET".equals(cmd)){
                 //清除绑定
                 StickDevice device = deviceService.findDeviceByImei(imei);
-                device.reset();
-                device.updateById();
-                //清除关爱
-                StickUserDevice cond = new StickUserDevice();
-                cond.setDeviceId(device.getDeviceId());
-                userDeviceService.delete(new EntityWrapper<>(cond));
+                deviceService.removeUserDevice(user.getUserId(), device.getDeviceId());
                 //通知手杖重置
                 stickService.resetStick(imei);
                 ret.setCode(1000);

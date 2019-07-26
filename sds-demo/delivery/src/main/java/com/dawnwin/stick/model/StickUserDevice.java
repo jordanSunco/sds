@@ -33,6 +33,9 @@ public class StickUserDevice extends Model<StickUserDevice> {
     @TableField(value = "add_time")
     private Date addTime;
 
+    @TableField(value = "is_default")
+    private Boolean userDefault;
+
     @Override
     protected Serializable pkVal() {
         return bindId;

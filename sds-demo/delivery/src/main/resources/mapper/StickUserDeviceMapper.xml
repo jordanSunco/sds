@@ -1,9 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dawnwin.stick.mapper.StickUserDeviceMapper">
-    <select id="listLoveDeviceByUserId" parameterType="int" resultType="com.dawnwin.stick.model.StickDevice">
-        select id AS deviceId,device_imei AS deviceImei,bind_phone AS bindPhone,user_id AS userId,avaster,nickname AS nickName,add_time AS addTime,user_default AS userDefault,sex,weight,height,age,city,sos_list AS sosList,bind_time AS bindTime,switch_on_off AS switchOnOff from stk_device a where a.id in(
-          select device_id from stk_user_device b where b.user_id = #{userId}
-        )
+    <select id="listDevicesByUserId" parameterType="int" resultType="com.dawnwin.stick.model.StickDevice">
+        SELECT
+            a.id AS deviceId,
+            a.device_imei AS deviceImei,
+            a.bind_phone AS bindPhone,
+            a.avaster,
+            a.nickname AS nickName,
+            a.add_time AS addTime,
+            a.sex,
+            a.weight,
+            a.height,
+            a.age,
+            a.city,
+            a.sos_list AS sosList,
+            b.bind_type AS bindType,
+            b.user_id AS userId,
+            b.add_time AS bindTime,
+            b.is_default AS isDefault
+        FROM
+            stk_device a, stk_user_device b
+        WHERE a.id = b.device_id and b.user_id = #{userId}
     </select>
+
+    <delete id="deleteByUserAndDevice" parameterType="map">
+        delete from stk_user_device where user_id = #{userId} and device_id = #{deviceId}
+    </delete>
 </mapper>

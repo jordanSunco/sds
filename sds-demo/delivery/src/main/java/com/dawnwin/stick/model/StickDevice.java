@@ -6,7 +6,9 @@ import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -27,20 +29,16 @@ public class StickDevice extends Model<StickDevice> {
     @TableField(value = "bind_phone")
     private String bindPhone;
 
-    @TableField(value = "user_id")
-    private Integer userId;
-
     @TableField(value = "avaster")
     private String avaster;
 
     @TableField(value = "nickname")
     private String nickName;
 
+    @DateTimeFormat(pattern= "yyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern= "yyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @TableField(value = "add_time")
     private Date addTime;
-
-    @TableField(value = "user_default")
-    private Boolean userDefault;
 
     private String sex;
 
@@ -55,11 +53,16 @@ public class StickDevice extends Model<StickDevice> {
     @TableField(value = "sos_list")
     private String sosList;
 
-    @TableField(value = "bind_time")
-    private Date bindTime;
-
     @TableField(value = "switch_on_off")
     private Integer switchOnOff;
+
+    @DateTimeFormat(pattern= "yyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern= "yyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date bindTime;
+
+    private Integer bindType;
+
+    private Boolean isDefault;
 
     @Override
     protected Serializable pkVal() {
@@ -67,17 +70,15 @@ public class StickDevice extends Model<StickDevice> {
     }
 
     public void reset(){
-        setUserDefault(false);
-        setSosList(null);
-        setAvaster(null);
-        setNickName(null);
-        setBindTime(null);
-        setBindPhone(null);
-        setCity(null);
-        setAge(0);
-        setHeight(0);
-        setSex(null);
-        setUserId(null);
-        setWeight(0);
+        avaster = null;
+        bindPhone = null;
+        nickName = null;
+        sex = null;
+        weight = null;
+        height = null;
+        age = null;
+        city = null;
+        sosList = null;
+        updateById();
     }
 }
