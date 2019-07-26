@@ -368,6 +368,8 @@ public class StickController {
         R<Boolean> ret = new R<>(false);
         String imei = deviceInfo.getString("imei");
         if(!StringUtils.isEmpty(imei)){
+            String mobile = getMobile();
+            StickUser user = userService.selectByMobile(mobile);
             StickDevice device = deviceService.findDeviceByImei(imei);
             if(device == null){
                 ret.setCode(1001);
@@ -379,9 +381,6 @@ public class StickController {
                 }
                 if(deviceInfo.containsKey("weight")){
                     device.setWeight(deviceInfo.getInteger("weight"));
-                }
-                if(deviceInfo.containsKey("nickname")){
-                    device.setNickName(deviceInfo.getString("nickname"));
                 }
                 if(deviceInfo.containsKey("avaster")){
                     device.setAvaster(deviceInfo.getString("avaster"));
@@ -396,6 +395,17 @@ public class StickController {
                     device.setAge(deviceInfo.getInteger("age"));
                 }
                 deviceService.updateById(device);
+                if(deviceInfo.containsKey("nickname")){
+                    device.setNickName(deviceInfo.getString("nickname"));
+                    StickUserDevice cond = new StickUserDevice();
+                    cond.setDeviceId(device.getDeviceId());
+                    cond.setUserId(user.getUserId());
+                    StickUserDevice userDevice = userDeviceService.selectOne(new EntityWrapper<>(cond));
+                    if(userDevice != null){
+                        userDevice.setNickName(deviceInfo.getString("nickname"));
+                        userDevice.updateById();
+                    }
+                }
                 ret.setCode(1000);
                 ret.setMsg("设备信息保存成功");
                 ret.setData(true);
@@ -891,7 +901,7 @@ public class StickController {
                                         warn.setWarnTime(new Date());
                                         warn.setWarnType(2);
                                         warn.setDeviceId(device.getDeviceId());
-                                        warn.setContent(device.getNickName() + "进入[" + fenceName + "]电子围栏!");
+                                        warn.setContent("进入[" + fenceName + "]电子围栏!");
                                         warn.insert();
                                     }
                                     if (action.equals("leave") && fc.getOutAlert()) {
@@ -899,7 +909,7 @@ public class StickController {
                                         warn.setWarnTime(new Date());
                                         warn.setWarnType(2);
                                         warn.setDeviceId(device.getDeviceId());
-                                        warn.setContent(device.getNickName() + "离开[" + fenceName + "]电子围栏!");
+                                        warn.setContent("离开[" + fenceName + "]电子围栏!");
                                         warn.insert();
                                     }
                                 }

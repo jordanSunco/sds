@@ -36,6 +36,9 @@ public class StickUserDevice extends Model<StickUserDevice> {
     @TableField(value = "is_default")
     private Boolean userDefault;
 
+    @TableField(value = "nickname")
+    private String nickName;
+
     @Override
     protected Serializable pkVal() {
         return bindId;

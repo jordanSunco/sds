@@ -7,7 +7,6 @@
             a.device_imei AS deviceImei,
             a.bind_phone AS bindPhone,
             a.avaster,
-            a.nickname AS nickName,
             a.add_time AS addTime,
             a.sex,
             a.weight,
@@ -28,7 +27,6 @@
         a.bind_phone = #{bindPhone},
         a.city = #{city},
         a.height = #{height},
-        a.nickname = #{nickName},
         a.sex = #{sex},
         a.weight = #{weight},
         a.sos_list = #{sosList}

@@ -7,7 +7,7 @@
             a.device_imei AS deviceImei,
             a.bind_phone AS bindPhone,
             a.avaster,
-            a.nickname AS nickName,
+            b.nickname AS nickName,
             a.add_time AS addTime,
             a.sex,
             a.weight,

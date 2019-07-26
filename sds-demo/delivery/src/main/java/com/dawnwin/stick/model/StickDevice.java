@@ -72,7 +72,6 @@ public class StickDevice extends Model<StickDevice> {
     public void reset(){
         avaster = null;
         bindPhone = null;
-        nickName = null;
         sex = null;
         weight = null;
         height = null;
