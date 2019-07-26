@@ -310,16 +310,15 @@ public class StickController {
                             }
                         }
                     }
-                }else {
-                    cond = new StickUserDevice();
-                    cond.setUserId(user.getUserId());
-                    cond.setUserDefault(true);
-                    List<StickUserDevice> userDeviceList = userDeviceService.selectList(new EntityWrapper<>(cond));
-                    if(userDeviceList == null || userDeviceList.size() == 0) {
-                        isDefault = true;
-                    }else{
-                        isDefault = false;
-                    }
+                }
+                cond = new StickUserDevice();
+                cond.setUserId(user.getUserId());
+                cond.setUserDefault(true);
+                List<StickUserDevice> userDeviceList = userDeviceService.selectList(new EntityWrapper<>(cond));
+                if(userDeviceList == null || userDeviceList.size() == 0) {
+                    isDefault = true;
+                }else{
+                    isDefault = false;
                 }
                 if(isSelfBinded){
                     ret.setCode(1001);
