@@ -254,13 +254,25 @@ public class StickController {
     }
 
     @GetMapping(value = "/api/auth/getDevice")
-    public R<StickDevice> getDevice(@RequestParam String imei){
-        R<StickDevice> ret = new R<>();
+    public R<JSONObject> getDevice(@RequestParam String imei){
+        R<JSONObject> ret = new R<>();
         if(!StringUtils.isEmpty(imei)){
             StickDevice device = deviceService.findDeviceByImei(imei);
+            String mobile = getMobile();
+            StickUser user = userService.selectByMobile(mobile);
+            JSONObject obj = JSONObject.parseObject(JSON.toJSONString(device));
+            if(device != null) {
+                StickUserDevice cond = new StickUserDevice();
+                cond.setDeviceId(device.getDeviceId());
+                cond.setUserId(user.getUserId());
+                StickUserDevice userDevice = userDeviceService.selectOne(new EntityWrapper<>(cond));
+                if(userDevice!=null){
+                    obj.put("bindType", userDevice.getBindType());
+                }
+            }
             if(device != null){
                 ret.setCode(1000);
-                ret.setData(device);
+                ret.setData(obj);
             }
         }
         return ret;
