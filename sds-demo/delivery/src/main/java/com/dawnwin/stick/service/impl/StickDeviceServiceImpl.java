@@ -85,7 +85,6 @@ public class StickDeviceServiceImpl extends ServiceImpl<StickDeviceMapper, Stick
         try {
             for (StickFence fence : fences) {
                 restTemplate.delete("https://restapi.amap.com/v4/geofence/meta?key=178d7cef1209656b6d17dda618778330&gid=" + fence.getAmapGid());
-
             }
         }catch (Exception ex){
             ex.printStackTrace();
