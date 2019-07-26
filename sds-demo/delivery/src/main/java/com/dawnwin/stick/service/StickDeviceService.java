@@ -9,5 +9,5 @@ import java.util.Map;
 public interface StickDeviceService extends IService<StickDevice> {
     StickDevice findDeviceByImei(String imei);
     List<StickDevice> listDeviceByUserId(int userId);
-    void removeUserDevice(int userId, int deviceId);
+    void removeUserDevice(int userId, String imei);
 }

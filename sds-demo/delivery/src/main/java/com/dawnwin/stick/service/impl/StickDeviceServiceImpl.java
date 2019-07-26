@@ -31,7 +31,11 @@ public class StickDeviceServiceImpl extends ServiceImpl<StickDeviceMapper, Stick
     }
 
     @Override
-    public void removeUserDevice(int userId, int devideId){
+    public void removeUserDevice(int userId, String imei){
+        StickDevice dev = findDeviceByImei(imei);
+        if(dev == null){
+            return;
+        }
         StickUserDevice cond = new StickUserDevice();
         cond.setUserId(userId);
         List<StickUserDevice> existRelas = userDeviceService.selectList(new EntityWrapper<>(cond));
@@ -39,7 +43,7 @@ public class StickDeviceServiceImpl extends ServiceImpl<StickDeviceMapper, Stick
             boolean isDefaultDeleted = false;
             boolean isNewDefaultSet = false;
             for(StickUserDevice userDevice:existRelas) {
-                if (userDevice.getDeviceId() == devideId) {
+                if (userDevice.getDeviceId() == dev.getDeviceId()) {
                     //如果是默认设备，则把该账号下其他设备设置为默认设备
                     userDevice.deleteById();
                     if(userDevice.getUserDefault()) {
@@ -55,7 +59,8 @@ public class StickDeviceServiceImpl extends ServiceImpl<StickDeviceMapper, Stick
                 }
             }
         }
-        selectById(devideId).reset();
+        dev.reset();
+        updateById(dev);
     }
 
     @Override

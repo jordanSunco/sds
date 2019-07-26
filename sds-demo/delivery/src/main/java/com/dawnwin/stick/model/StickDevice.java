@@ -79,6 +79,5 @@ public class StickDevice extends Model<StickDevice> {
         age = null;
         city = null;
         sosList = null;
-        updateById();
     }
 }

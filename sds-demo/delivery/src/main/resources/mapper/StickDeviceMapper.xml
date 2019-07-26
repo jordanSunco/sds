@@ -23,34 +23,15 @@
     <update id="updateById" parameterType="com.dawnwin.stick.model.StickDevice">
       UPDATE stk_device a
         SET
-        <if test="age != null">
-            a.age = #{age},
-        </if>
-        <if test="avaster != null">
-            a.avaster = #{avaster},
-        </if>
-        <if test="bindPhone != null">
-            a.bind_phone = #{bindPhone},
-        </if>
-        <if test="city != null">
-            a.city = #{city},
-        </if>
-        <if test="height != null">
-            a.height = #{height},
-        </if>
-        <if test="nickName != null">
-            a.nickname = #{nickName},
-        </if>
-        <if test="sex != null">
-            a.sex = #{sex},
-        </if>
-        <if test="weight != null">
-            a.weight = #{weight},
-        </if>
-        <if test="sosList != null">
-            a.sos_list = #{sosList},
-        </if>
-        a.id = #{deviceId}
+        a.age = #{age},
+        a.avaster = #{avaster},
+        a.bind_phone = #{bindPhone},
+        a.city = #{city},
+        a.height = #{height},
+        a.nickname = #{nickName},
+        a.sex = #{sex},
+        a.weight = #{weight},
+        a.sos_list = #{sosList}
         WHERE 1=1 and id = #{deviceId}
     </update>
 </mapper>

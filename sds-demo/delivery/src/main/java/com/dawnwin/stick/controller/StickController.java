@@ -282,9 +282,9 @@ public class StickController {
                 boolean isDefault = true;
                 boolean isSelfBinded = false;
                 if (userDevices != null && userDevices.size()>0) {
-                    isDefault = false;
+                    //设备被别人绑定过
                     for(StickUserDevice userDevice: userDevices) {
-                        if(userDevice.getDeviceId() == device.getDeviceId()){
+                        if(userDevice.getUserId() == user.getUserId()){
                             isSelfBinded = true;
                             break;
                         }
@@ -297,6 +297,16 @@ public class StickController {
                                 break;
                             }
                         }
+                    }
+                }else {
+                    cond = new StickUserDevice();
+                    cond.setUserId(user.getUserId());
+                    cond.setUserDefault(true);
+                    List<StickUserDevice> userDeviceList = userDeviceService.selectList(new EntityWrapper<>(cond));
+                    if(userDeviceList == null || userDeviceList.size() == 0) {
+                        isDefault = true;
+                    }else{
+                        isDefault = false;
                     }
                 }
                 if(isSelfBinded){
@@ -500,7 +510,7 @@ public class StickController {
         if(!StringUtils.isEmpty(mobile)){
             StickDevice dev = deviceService.findDeviceByImei(imei);
             if(dev!=null){
-                deviceService.removeUserDevice(user.getUserId(), dev.getDeviceId());
+                deviceService.removeUserDevice(user.getUserId(), imei);
             }
             List<StickDevice> devices = deviceService.listDeviceByUserId(user.getUserId());
             if(devices !=null && devices.size()>0){
@@ -600,8 +610,7 @@ public class StickController {
             }
             if("RESET".equals(cmd)){
                 //清除绑定
-                StickDevice device = deviceService.findDeviceByImei(imei);
-                deviceService.removeUserDevice(user.getUserId(), device.getDeviceId());
+                deviceService.removeUserDevice(user.getUserId(), imei);
                 //通知手杖重置
                 stickService.resetStick(imei);
                 ret.setCode(1000);
