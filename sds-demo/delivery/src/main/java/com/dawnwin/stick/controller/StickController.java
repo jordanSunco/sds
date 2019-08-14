@@ -296,7 +296,7 @@ public class StickController {
                 if (userDevices != null && userDevices.size()>0) {
                     //设备被别人绑定过
                     for(StickUserDevice userDevice: userDevices) {
-                        if(userDevice.getUserId() == user.getUserId()){
+                        if(userDevice.getUserId().intValue() == user.getUserId().intValue()){
                             isSelfBinded = true;
                             break;
                         }
