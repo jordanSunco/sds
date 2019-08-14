@@ -52,7 +52,7 @@ public class StickDeviceServiceImpl extends ServiceImpl<StickDeviceMapper, Stick
             boolean isDefaultDeleted = false;
             boolean isNewDefaultSet = false;
             for(StickUserDevice userDevice:existRelas) {
-                if (userDevice.getDeviceId() == dev.getDeviceId()) {
+                if (userDevice.getDeviceId().intValue() == dev.getDeviceId().intValue()) {
                     //如果是默认设备，则把该账号下其他设备设置为默认设备
                     userDevice.deleteById();
                     if(userDevice.getUserDefault()) {
