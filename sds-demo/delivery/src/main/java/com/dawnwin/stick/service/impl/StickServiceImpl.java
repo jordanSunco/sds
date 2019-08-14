@@ -44,7 +44,7 @@ public class StickServiceImpl implements StickService {
     @Override
     public boolean setSosList(String imei, String phoneNumberList) {
         try {
-            String cmd = String.format("{%s#SOSLIST#%s#%s}\r\n",imei, DateUtil.formatDate(new Date(),"yyyyMMddHHmmss"), phoneNumberList);
+            String cmd = String.format("{%s#SOSLIST#%s#%s}}\r\n",imei, DateUtil.formatDate(new Date(),"yyyyMMddHHmmss"), phoneNumberList);
             return socketService.sendStrCmdByKey(imei, cmd);
         } catch (ServiceException e) {
             e.printStackTrace();
