@@ -15,6 +15,7 @@
             a.age,
             a.city,
             a.sos_list AS sosList,
+            a.switch_on_off AS switchOnOff,
             b.bind_type AS bindType,
             b.user_id AS userId,
             b.add_time AS bindTime,

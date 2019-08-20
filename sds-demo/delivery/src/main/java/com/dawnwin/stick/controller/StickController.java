@@ -639,11 +639,21 @@ public class StickController {
             }
             if("OPENGPS".equals(cmd)){
                 stickService.openGPS(imei);
+                StickDevice device = deviceService.findDeviceByImei(imei);
+                if(device != null){
+                    device.setSwitchOnOff(1);
+                    device.updateById();
+                }
                 ret.setCode(1000);
                 ret.setData(true);
             }
             if("CLOSEGPS".equals(cmd)){
                 stickService.closeGPS(imei);
+                StickDevice device = deviceService.findDeviceByImei(imei);
+                if(device != null){
+                    device.setSwitchOnOff(0);
+                    device.updateById();
+                }
                 ret.setCode(1000);
                 ret.setData(true);
             }
@@ -873,51 +883,58 @@ public class StickController {
             gps.setGpsTime(new Date());
             gps.setGpsData(data);
             gps.setBattery(power);
-            if(!StringUtils.isEmpty(data)){
-                JSONObject obj = restTemplate.getForObject("http://apilocate.amap.com/position?key=a19360c1294349ca021f32893658de66&accesstype=0"+data+"&output=json", JSONObject.class);
-                if(obj != null && obj.containsKey("result")){
-                    JSONObject locationObj = obj.getJSONObject("result");
-                    gps.setAddress(locationObj.getString("desc"));
-                    gps.setLatitude(Double.valueOf(locationObj.getString("location").split(",")[1]));
-                    gps.setLongitude(Double.valueOf(locationObj.getString("location").split(",")[0]));
-                    gps.setRadius(Integer.valueOf(locationObj.getString("radius")));
-                    try {
-                        String locations = gps.getLongitude() + "," + gps.getLatitude() + "," + System.currentTimeMillis();
-                        obj = restTemplate.getForObject("https://restapi.amap.com/v4/geofence/status?key=178d7cef1209656b6d17dda618778330&diu=" + imei + "&uid=" + device.getDeviceId() + "&locations=" + locations, JSONObject.class);
-                        if (obj != null && obj.containsKey("fencing_event_list")) {
-                            JSONArray alertObj = obj.getJSONArray("fencing_event_list");
-                            for (Object alt : alertObj) {
-                                JSONObject altFence = (JSONObject) alt;
-                                String action = altFence.getString("client_action");
-                                String inout = altFence.getString("client_status");
-                                String gid = altFence.getJSONObject("fence_info").getString("fence_gid");
-                                String fenceName = altFence.getJSONObject("fence_info").getString("fence_name");
-                                StickFence cond = new StickFence();
-                                cond.setAmapGid(gid);
-                                StickFence fc = fenceService.selectOne(new EntityWrapper<>(cond));
-                                if (fc != null) {
-                                    if (action.equals("enter") && fc.getInAlert()) {
-                                        StickWarn warn = new StickWarn();
-                                        warn.setWarnTime(new Date());
-                                        warn.setWarnType(2);
-                                        warn.setDeviceId(device.getDeviceId());
-                                        warn.setContent("进入[" + fenceName + "]电子围栏!");
-                                        warn.insert();
-                                    }
-                                    if (action.equals("leave") && fc.getOutAlert()) {
-                                        StickWarn warn = new StickWarn();
-                                        warn.setWarnTime(new Date());
-                                        warn.setWarnType(2);
-                                        warn.setDeviceId(device.getDeviceId());
-                                        warn.setContent("离开[" + fenceName + "]电子围栏!");
-                                        warn.insert();
-                                    }
+            if(!StringUtils.isEmpty(data)) {
+                JSONObject obj = null;
+                if ("LBS".equals(cmd)) {
+                    obj = restTemplate.getForObject("http://apilocate.amap.com/position?key=a19360c1294349ca021f32893658de66&accesstype=0" + data + "&output=json", JSONObject.class);
+                    if (obj != null && obj.containsKey("result")) {
+                        JSONObject locationObj = obj.getJSONObject("result");
+                        gps.setAddress(locationObj.getString("desc"));
+                        gps.setLatitude(Double.valueOf(locationObj.getString("location").split(",")[1]));
+                        gps.setLongitude(Double.valueOf(locationObj.getString("location").split(",")[0]));
+                        gps.setRadius(Integer.valueOf(locationObj.getString("radius")));
+                    }
+                }
+                if("GPS".equals(cmd)){
+                    gps.setLatitude(Double.valueOf(data.split(",")[0]));//纬度
+                    gps.setLongitude(Double.valueOf(data.split(",")[1]));//经度
+                }
+                try {
+                    String locations = gps.getLongitude() + "," + gps.getLatitude() + "," + System.currentTimeMillis();
+                    obj = restTemplate.getForObject("https://restapi.amap.com/v4/geofence/status?key=178d7cef1209656b6d17dda618778330&diu=" + imei + "&uid=" + device.getDeviceId() + "&locations=" + locations, JSONObject.class);
+                    if (obj != null && obj.containsKey("fencing_event_list")) {
+                        JSONArray alertObj = obj.getJSONArray("fencing_event_list");
+                        for (Object alt : alertObj) {
+                            JSONObject altFence = (JSONObject) alt;
+                            String action = altFence.getString("client_action");
+                            String inout = altFence.getString("client_status");
+                            String gid = altFence.getJSONObject("fence_info").getString("fence_gid");
+                            String fenceName = altFence.getJSONObject("fence_info").getString("fence_name");
+                            StickFence cond = new StickFence();
+                            cond.setAmapGid(gid);
+                            StickFence fc = fenceService.selectOne(new EntityWrapper<>(cond));
+                            if (fc != null) {
+                                if (action.equals("enter") && fc.getInAlert()) {
+                                    StickWarn warn = new StickWarn();
+                                    warn.setWarnTime(new Date());
+                                    warn.setWarnType(2);
+                                    warn.setDeviceId(device.getDeviceId());
+                                    warn.setContent("进入[" + fenceName + "]电子围栏!");
+                                    warn.insert();
+                                }
+                                if (action.equals("leave") && fc.getOutAlert()) {
+                                    StickWarn warn = new StickWarn();
+                                    warn.setWarnTime(new Date());
+                                    warn.setWarnType(2);
+                                    warn.setDeviceId(device.getDeviceId());
+                                    warn.setContent("离开[" + fenceName + "]电子围栏!");
+                                    warn.insert();
                                 }
                             }
                         }
-                    }catch (Exception ex){
-                        ex.printStackTrace();
                     }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
             }
             gps.insert();

@@ -103,6 +103,18 @@ public class StickCommand {
         if(len>9 &&!StringUtils.isEmpty(splitItems[9])){
             command.setCmdData(splitItems[9]);
         }
+        if(len>10 &&!StringUtils.isEmpty(splitItems[10])){
+            String data = command.getCmdData();
+            command.setCmdData(data+","+splitItems[10]);
+        }
+        if(len>11 &&!StringUtils.isEmpty(splitItems[11])){
+            String data = command.getCmdData();
+            command.setCmdData(data+","+splitItems[11]);
+        }
+        if(len>12 &&!StringUtils.isEmpty(splitItems[12])){
+            String data = command.getCmdData();
+            command.setCmdData(data+","+splitItems[12]);
+        }
 
         return command;
     }
