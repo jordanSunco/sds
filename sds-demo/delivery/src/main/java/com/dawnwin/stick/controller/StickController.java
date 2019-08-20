@@ -898,7 +898,13 @@ public class StickController {
                 if("GPS".equals(cmd)){
                     gps.setLatitude(Double.valueOf(data.split(",")[0]));//纬度
                     gps.setLongitude(Double.valueOf(data.split(",")[1]));//经度
+                    obj = restTemplate.getForObject("https://restapi.amap.com/v3/geocode/regeo?key=178d7cef1209656b6d17dda618778330&location="+gps.getLongitude()+","+gps.getLatitude(), JSONObject.class);
+                    if(obj != null && obj.containsKey("regeocodes")){
+                        String address = obj.getJSONObject("regeocodes").getString("formatted_address");
+                        gps.setAddress(address);
+                    }
                 }
+                gps.insert();
                 try {
                     String locations = gps.getLongitude() + "," + gps.getLatitude() + "," + System.currentTimeMillis();
                     obj = restTemplate.getForObject("https://restapi.amap.com/v4/geofence/status?key=178d7cef1209656b6d17dda618778330&diu=" + imei + "&uid=" + device.getDeviceId() + "&locations=" + locations, JSONObject.class);
@@ -937,7 +943,6 @@ public class StickController {
                     ex.printStackTrace();
                 }
             }
-            gps.insert();
         }else if("FALLDOWN".equals(cmd)){
             StickWarn warn = new StickWarn();
             warn.setDeviceId(device.getDeviceId());
