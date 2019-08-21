@@ -16,6 +16,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.dawnwin.stick.config.SMSTemplateConfig;
 import com.dawnwin.stick.model.*;
 import com.dawnwin.stick.service.*;
+import com.dawnwin.stick.utils.GpsUtils;
 import com.dawnwin.stick.utils.JwtHelper;
 import com.lorne.core.framework.exception.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -898,9 +899,10 @@ public class StickController {
                 if("GPS".equals(cmd)){
                     gps.setLatitude(Double.valueOf(data.split(",")[0]));//纬度
                     gps.setLongitude(Double.valueOf(data.split(",")[1]));//经度
-                    obj = restTemplate.getForObject("https://restapi.amap.com/v3/geocode/regeo?key=178d7cef1209656b6d17dda618778330&location="+gps.getLongitude()+","+gps.getLatitude(), JSONObject.class);
-                    if(obj != null && obj.containsKey("regeocodes")){
-                        String address = obj.getJSONObject("regeocodes").getString("formatted_address");
+                    double[] latLon = GpsUtils.toWGS84Point(gps.getLatitude(),gps.getLongitude());
+                    obj = restTemplate.getForObject("https://restapi.amap.com/v3/geocode/regeo?key=178d7cef1209656b6d17dda618778330&location="+latLon[1]+","+latLon[0], JSONObject.class);
+                    if(obj != null && obj.containsKey("regeocode")){
+                        String address = obj.getJSONObject("regeocode").getString("formatted_address");
                         gps.setAddress(address);
                     }
                 }
