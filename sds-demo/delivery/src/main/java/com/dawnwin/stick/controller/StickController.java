@@ -221,6 +221,7 @@ public class StickController {
                     retJson.put("bindimei", defaultDevice.getDeviceImei());
                     retJson.put("phone", defaultDevice.getBindPhone());
                     retJson.put("nickname", StringUtils.isEmpty(defaultDevice.getNickName())? "":defaultDevice.getNickName());
+                    retJson.put("gpsStatus", defaultDevice.getSwitchOnOff()==null? 0:defaultDevice.getSwitchOnOff());
                     ret.setData(retJson);
                 }
             }else{
@@ -643,7 +644,7 @@ public class StickController {
                 StickDevice device = deviceService.findDeviceByImei(imei);
                 if(device != null){
                     device.setSwitchOnOff(1);
-                    device.updateById();
+                    deviceService.updateById(device);
                 }
                 ret.setCode(1000);
                 ret.setData(true);
@@ -653,7 +654,7 @@ public class StickController {
                 StickDevice device = deviceService.findDeviceByImei(imei);
                 if(device != null){
                     device.setSwitchOnOff(0);
-                    device.updateById();
+                    deviceService.updateById(device);
                 }
                 ret.setCode(1000);
                 ret.setData(true);
@@ -899,7 +900,9 @@ public class StickController {
                 if("GPS".equals(cmd)){
                     gps.setLatitude(Double.valueOf(data.split(",")[0]));//纬度
                     gps.setLongitude(Double.valueOf(data.split(",")[1]));//经度
-                    double[] latLon = GpsUtils.toWGS84Point(gps.getLatitude(),gps.getLongitude());
+                    double[] latLon = GpsUtils.toGCJ02Point(gps.getLatitude(),gps.getLongitude());
+                    gps.setLatitude(latLon[0]);
+                    gps.setLongitude(latLon[1]);
                     obj = restTemplate.getForObject("https://restapi.amap.com/v3/geocode/regeo?key=178d7cef1209656b6d17dda618778330&location="+latLon[1]+","+latLon[0], JSONObject.class);
                     if(obj != null && obj.containsKey("regeocode")){
                         String address = obj.getJSONObject("regeocode").getString("formatted_address");

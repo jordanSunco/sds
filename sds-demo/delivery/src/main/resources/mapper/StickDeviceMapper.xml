@@ -29,7 +29,8 @@
         a.height = #{height},
         a.sex = #{sex},
         a.weight = #{weight},
-        a.sos_list = #{sosList}
+        a.sos_list = #{sosList},
+        a.switch_on_off = #{switchOnOff}
         WHERE 1=1 and id = #{deviceId}
     </update>
 </mapper>
