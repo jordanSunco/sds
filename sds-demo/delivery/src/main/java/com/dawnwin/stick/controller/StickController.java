@@ -911,10 +911,10 @@ public class StickController {
                 }
                 gps.insert();
                 try {
-                    String locations = gps.getLongitude() + "," + gps.getLatitude() + "," + System.currentTimeMillis();
+                    String locations = gps.getLatitude() + "," + gps.getLongitude() + "," + String.valueOf(System.currentTimeMillis()).substring(0,10);
                     obj = restTemplate.getForObject("https://restapi.amap.com/v4/geofence/status?key=178d7cef1209656b6d17dda618778330&diu=" + imei + "&uid=" + device.getDeviceId() + "&locations=" + locations, JSONObject.class);
-                    if (obj != null && obj.containsKey("fencing_event_list")) {
-                        JSONArray alertObj = obj.getJSONArray("fencing_event_list");
+                    if (obj != null && obj.getJSONObject("data").containsKey("fencing_event_list")) {
+                        JSONArray alertObj = obj.getJSONObject("data").getJSONArray("fencing_event_list");
                         for (Object alt : alertObj) {
                             JSONObject altFence = (JSONObject) alt;
                             String action = altFence.getString("client_action");
