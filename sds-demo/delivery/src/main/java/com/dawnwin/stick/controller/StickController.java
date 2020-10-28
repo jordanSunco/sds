@@ -194,7 +194,7 @@ public class StickController {
 
     @PostMapping(value = "/api/login")
     public R<JSONObject> login(@RequestParam(name = "mobile") String mobile,
-                                @RequestParam(name = "password") String password){
+                               @RequestParam(name = "password") String password){
         JSONObject retJson = new JSONObject();
         R<JSONObject> ret = new R<>();
         if(!StringUtils.isEmpty(mobile) && !StringUtils.isEmpty(password)){
@@ -803,7 +803,7 @@ public class StickController {
                     JSONObject obj = restTemplate.getForObject("https://restapi.amap.com/v4/geofence/meta?key=178d7cef1209656b6d17dda618778330&name=" + fence.getFenceName(), JSONObject.class);
                     if (obj != null && obj.getJSONObject("data").containsKey("rs_list") && obj.getJSONObject("data").getJSONArray("rs_list").size()>0) {
                         amapFence = obj.getJSONObject("data").getJSONArray("rs_list").getJSONObject(0);
-                        amapFence.put("center", fence.getGpsLongitude() + "," + fence.getGpsLatitude());
+                        amapFence.put("center", fence.getGpsLatitude() + "," + fence.getGpsLongitude());
                         amapFence.put("radius", fence.getRadius()+"");
                         amapFence.put("enable", fence.getValid()+"");
                         amapFence.put("repeat","Mon,Tues,Wed,Thur,Fri,Sat,Sun");
@@ -823,7 +823,7 @@ public class StickController {
                     } else {
                         amapFence = new JSONObject();
                         amapFence.put("name", fence.getFenceName());
-                        amapFence.put("center", fence.getGpsLongitude() + "," + fence.getGpsLatitude());
+                        amapFence.put("center", fence.getGpsLatitude() + "," + fence.getGpsLongitude());
                         amapFence.put("radius", fence.getRadius()+"");
                         amapFence.put("enable", fence.getValid()+"");
                         amapFence.put("repeat","Mon,Tues,Wed,Thur,Fri,Sat,Sun");
