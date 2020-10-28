@@ -803,7 +803,7 @@ public class StickController {
                     JSONObject obj = restTemplate.getForObject("https://restapi.amap.com/v4/geofence/meta?key=178d7cef1209656b6d17dda618778330&name=" + fence.getFenceName(), JSONObject.class);
                     if (obj != null && obj.getJSONObject("data").containsKey("rs_list") && obj.getJSONObject("data").getJSONArray("rs_list").size()>0) {
                         amapFence = obj.getJSONObject("data").getJSONArray("rs_list").getJSONObject(0);
-                        amapFence.put("center", fence.getGpsLatitude() + "," + fence.getGpsLongitude());
+                        amapFence.put("center", fence.getGpsLongitude() + "," + fence.getGpsLatitude());
                         amapFence.put("radius", fence.getRadius()+"");
                         amapFence.put("enable", fence.getValid()+"");
                         amapFence.put("repeat","Mon,Tues,Wed,Thur,Fri,Sat,Sun");
@@ -823,7 +823,7 @@ public class StickController {
                     } else {
                         amapFence = new JSONObject();
                         amapFence.put("name", fence.getFenceName());
-                        amapFence.put("center", fence.getGpsLatitude() + "," + fence.getGpsLongitude());
+                        amapFence.put("center", fence.getGpsLongitude() + "," + fence.getGpsLatitude());
                         amapFence.put("radius", fence.getRadius()+"");
                         amapFence.put("enable", fence.getValid()+"");
                         amapFence.put("repeat","Mon,Tues,Wed,Thur,Fri,Sat,Sun");
@@ -911,9 +911,10 @@ public class StickController {
                 }
                 gps.insert();
                 try {
-                    String locations = gps.getLatitude() + "," + gps.getLongitude() + "," + String.valueOf(System.currentTimeMillis()).substring(0,10);
+                    String locations = gps.getLongitude() + "," + gps.getLatitude() + "," + System.currentTimeMillis()/1000L;
                     obj = restTemplate.getForObject("https://restapi.amap.com/v4/geofence/status?key=178d7cef1209656b6d17dda618778330&diu=" + imei + "&uid=" + device.getDeviceId() + "&locations=" + locations, JSONObject.class);
-                    if (obj != null && obj.getJSONObject("data").containsKey("fencing_event_list")) {
+                    System.out.println(obj.toJSONString());
+                    if (obj != null && obj.containsKey("data") && obj.getJSONObject("data").containsKey("fencing_event_list")) {
                         JSONArray alertObj = obj.getJSONObject("data").getJSONArray("fencing_event_list");
                         for (Object alt : alertObj) {
                             JSONObject altFence = (JSONObject) alt;
